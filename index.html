@@ -71,6 +71,11 @@
         let currentOTP = "";
 
         function startFlow() {
+            // যদি ইউজার আইডি না পাওয়া যায়, তাহলে এখানেই আটকে যাবে
+            if (!userId) {
+                tg.showAlert("Error: Open this inside Telegram properly!");
+                return; 
+            }
             tg.requestContact();
             tg.MainButton.hide();
             document.getElementById('finger_point').classList.add('hidden');
