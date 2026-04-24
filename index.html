@@ -16,27 +16,29 @@
             align-items: center; 
             justify-content: center;
         }
+        /* ব্লার কমিয়ে ৩ পিক্সেল করা হয়েছে */
         .overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); z-index: 1; 
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(3px); z-index: 1; 
         }
+        /* কার্ডের ব্লার ১০ পিক্সেল করা হয়েছে */
         .card { 
             position: relative; z-index: 2; width: 85%; max-width: 350px; 
-            background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); 
+            background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); 
             border-radius: 25px; padding: 40px 20px; text-align: center; 
-            border: 1px solid rgba(255,255,255,0.3); 
+            border: 1px solid rgba(255,255,255,0.2); 
             box-shadow: 0 15px 35px rgba(0,0,0,0.5); 
         }
-        h2 { color: #fff; font-size: 26px; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-        p { color: #eee; font-size: 16px; line-height: 1.5; margin-bottom: 30px; }
+        h2 { color: #fff; font-size: 26px; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        p { color: #fff; font-size: 16px; font-weight: 500; line-height: 1.5; margin-bottom: 30px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
         .btn-confirm { 
             width: 100%; padding: 15px; border-radius: 15px; border: none; 
-            font-size: 18px; font-weight: bold; cursor: pointer; color: #fff; 
+            font-size: 20px; font-weight: bold; cursor: pointer; color: #fff; 
             background: linear-gradient(135deg, #ff416c, #ff4b2b); 
             box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
-            text-transform: uppercase; letter-spacing: 1px; transition: transform 0.2s;
+            text-transform: uppercase; transition: transform 0.2s;
         }
-        .btn-confirm:active { transform: scale(0.98); }
+        .btn-confirm:active { transform: scale(0.96); }
     </style>
 </head>
 <body>
@@ -52,16 +54,16 @@
         tg.expand();
 
         function openAd() {
-            // আপনার সেই অ্যাড লিঙ্কটি এখানে দেওয়া হলো
+            // আপনার অ্যাড লিঙ্ক
             const adLink = "https://www.profitablecpmratenetwork.com/w47jpksk7t?key=15b5e8ae609b09733d4a0906eac2a446";
             
             // লিঙ্কটি ওপেন করা হবে
             tg.openLink(adLink);
             
-            // ৫ সেকেন্ড পর অটোমেটিক অ্যাপটি বন্ধ হয়ে যাবে
+            // ৩ সেকেন্ড পর অ্যাপটি বন্ধ হয়ে যাবে
             setTimeout(() => {
                 tg.close();
-            }, 5000);
+            }, 3000);
         }
     </script>
 </body>
